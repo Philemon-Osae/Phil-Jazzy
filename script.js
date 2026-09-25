@@ -193,14 +193,14 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   /* worship pad synth — separate audio graph from the drum kit above, sustains until tapped again */
-  let wActx = null, wReverb = null, wDryGain = null, wWetGain = null;
+  let wActx = null, wReverb = null, wDryGain = null, wWetGain = null, wLimiter = null;
   let chordMode = "major";
   let currentTone = "warm";
 
   const tonePresets = {
     warm:    { oscTypes:["sine","triangle"], filterStart:350,  filterEnd:1700, filterQ:0.4, attack:1.4, release:2.0, lfoRate:0.10, lfoDepth:2.5, shimmer:0.08, wet:0.55 },
     bright:  { oscTypes:["triangle","sawtooth"], filterStart:600, filterEnd:3200, filterQ:0.6, attack:1.0, release:1.6, lfoRate:0.15, lfoDepth:3.5, shimmer:0.14, wet:0.45 },
-    strings: { oscTypes:["sawtooth","sawtooth"], filterStart:400, filterEnd:2000, filterQ:0.8, attack:1.8, release:2.4, lfoRate:0.08, lfoDepth:4.0, shimmer:0.06, wet:0.6 },
+    strings: { oscTypes:["sawtooth","triangle"], filterStart:400, filterEnd:1900, filterQ:0.5, attack:1.8, release:2.4, lfoRate:0.08, lfoDepth:2.5, shimmer:0.06, wet:0.5 },
     airy:    { oscTypes:["sine","sine"], filterStart:800, filterEnd:2600, filterQ:0.3, attack:2.2, release:2.8, lfoRate:0.06, lfoDepth:2.0, shimmer:0.22, wet:0.75 },
   };
 
@@ -223,10 +223,17 @@ document.addEventListener("DOMContentLoaded", function(){
     if(!wActx){
       wActx = new AudioCtx();
       wReverb = buildReverb(wActx);
+      wLimiter = wActx.createDynamicsCompressor();
+      wLimiter.threshold.value = -6;
+      wLimiter.knee.value = 6;
+      wLimiter.ratio.value = 12;
+      wLimiter.attack.value = 0.003;
+      wLimiter.release.value = 0.25;
+      wLimiter.connect(wActx.destination);
       wDryGain = wActx.createGain(); wDryGain.gain.value = 0.5;
       wWetGain = wActx.createGain(); wWetGain.gain.value = 0.55;
-      wDryGain.connect(wActx.destination);
-      wReverb.connect(wWetGain).connect(wActx.destination);
+      wDryGain.connect(wLimiter);
+      wReverb.connect(wWetGain).connect(wLimiter);
     }
     return wActx;
   }
