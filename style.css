@@ -80,15 +80,29 @@ h2.section-title{color:var(--gold);font-size:22px;letter-spacing:2px;margin:50px
 
 .kit-hint{font-size:13px;opacity:.6;margin-bottom:18px}
 .pads{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:520px;margin:0 auto}
-.pad{
+.pad, .wpad{
   aspect-ratio:1;
   background:#0d1420;border:1.5px solid #444;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;user-select:none;transition:.12s;
   font-weight:bold;color:#fff;font-size:19px;letter-spacing:.5px;
 }
-.pad:hover{border-color:#777}
+.pad:hover, .wpad:hover{border-color:#777}
 .pad:active, .pad.hit{transform:scale(.94);border-color:var(--gold);box-shadow:0 0 22px rgba(255,215,0,.45);background:#1f1a05;color:var(--gold);}
+.wpad:active{transform:scale(.96)}
+.wpad.playing{border-color:var(--gold);box-shadow:0 0 22px rgba(255,215,0,.5);background:#1f1a05;color:var(--gold);}
+
+.mode-toggle{
+  display:flex;max-width:340px;margin:0 auto 16px;border:1.5px solid #444;border-radius:30px;overflow:hidden;
+}
+.mode-btn{flex:1;padding:12px 10px;text-align:center;font-weight:bold;font-size:14px;color:#aaa;background:transparent;border:none;cursor:pointer;transition:.2s;}
+.mode-btn.active{background:#2a2a2a;color:var(--gold)}
+
+.tone-toggle{
+  display:flex;max-width:420px;margin:0 auto 20px;border:1.5px solid #444;border-radius:30px;overflow:hidden;flex-wrap:wrap;
+}
+.tone-btn{flex:1;min-width:100px;padding:10px 8px;text-align:center;font-weight:bold;font-size:13px;color:#aaa;background:transparent;border:none;cursor:pointer;transition:.2s;}
+.tone-btn.active{background:#2a2a2a;color:var(--gold)}
 
 #toTop{
   position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));
