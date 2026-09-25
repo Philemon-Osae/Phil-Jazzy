@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
   const progress = document.getElementById("progress");
   const toTop = document.getElementById("toTop");
   const navLinks = document.querySelectorAll("nav a");
-  const sections = ["home","about","services","drumkit","contact"].map(id=>document.getElementById(id));
+  const sections = ["home","about","services","drumkit","worship","contact"].map(id=>document.getElementById(id));
 
   window.addEventListener("scroll", function(){
     const h = document.documentElement;
@@ -190,5 +190,174 @@ document.addEventListener("DOMContentLoaded", function(){
     const key = e.key.toLowerCase();
     const pad = document.querySelector('.pad[data-key="'+key+'"]');
     if(pad) hitPad(pad);
+  });
+
+  /* worship pad synth — separate audio graph from the drum kit above, sustains until tapped again */
+  let wActx = null, wReverb = null, wDryGain = null, wWetGain = null;
+  let chordMode = "major";
+  let currentTone = "warm";
+
+  const tonePresets = {
+    warm:    { oscTypes:["sine","triangle"], filterStart:350,  filterEnd:1700, filterQ:0.4, attack:1.4, release:2.0, lfoRate:0.10, lfoDepth:2.5, shimmer:0.08, wet:0.55 },
+    bright:  { oscTypes:["triangle","sawtooth"], filterStart:600, filterEnd:3200, filterQ:0.6, attack:1.0, release:1.6, lfoRate:0.15, lfoDepth:3.5, shimmer:0.14, wet:0.45 },
+    strings: { oscTypes:["sawtooth","sawtooth"], filterStart:400, filterEnd:2000, filterQ:0.8, attack:1.8, release:2.4, lfoRate:0.08, lfoDepth:4.0, shimmer:0.06, wet:0.6 },
+    airy:    { oscTypes:["sine","sine"], filterStart:800, filterEnd:2600, filterQ:0.3, attack:2.2, release:2.8, lfoRate:0.06, lfoDepth:2.0, shimmer:0.22, wet:0.75 },
+  };
+
+  function buildReverb(c){
+    const duration = 3.2, rate = c.sampleRate;
+    const len = rate * duration;
+    const buf = c.createBuffer(2, len, rate);
+    for(let ch=0; ch<2; ch++){
+      const data = buf.getChannelData(ch);
+      for(let i=0;i<len;i++){
+        data[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.4);
+      }
+    }
+    const conv = c.createConvolver();
+    conv.buffer = buf;
+    return conv;
+  }
+
+  function wCtx(){
+    if(!wActx){
+      wActx = new AudioCtx();
+      wReverb = buildReverb(wActx);
+      wDryGain = wActx.createGain(); wDryGain.gain.value = 0.5;
+      wWetGain = wActx.createGain(); wWetGain.gain.value = 0.55;
+      wDryGain.connect(wActx.destination);
+      wReverb.connect(wWetGain).connect(wActx.destination);
+    }
+    return wActx;
+  }
+
+  function chordFreqs(root, mode){
+    const thirdInterval = mode === "minor" ? Math.pow(2, 3/12) : Math.pow(2, 4/12);
+    const fifthInterval = Math.pow(2, 7/12);
+    return [root, root * thirdInterval, root * fifthInterval];
+  }
+
+  const activeWorshipPads = {};
+
+  function startWorshipPad(padEl, rootFreq){
+    const c = wCtx(), t = c.currentTime;
+    const preset = tonePresets[currentTone];
+    wWetGain.gain.value = preset.wet;
+
+    const master = c.createGain();
+    master.gain.setValueAtTime(0, t);
+    master.gain.linearRampToValueAtTime(0.24, t + preset.attack);
+
+    const filter = c.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(preset.filterStart, t);
+    filter.frequency.linearRampToValueAtTime(preset.filterEnd, t + preset.attack);
+    filter.Q.value = preset.filterQ;
+
+    master.connect(filter);
+    filter.connect(wDryGain);
+    filter.connect(wReverb);
+
+    const lfo = c.createOscillator();
+    lfo.frequency.value = preset.lfoRate;
+    const lfoGain = c.createGain();
+    lfoGain.gain.value = preset.lfoDepth;
+    lfo.connect(lfoGain);
+    lfo.start(t);
+
+    const oscillators = [];
+    const freqs = chordFreqs(rootFreq, chordMode);
+    freqs.forEach((freq, voiceIdx)=>{
+      [ -2, 2 ].forEach((detuneCents, i)=>{
+        const osc = c.createOscillator();
+        osc.type = preset.oscTypes[i];
+        osc.frequency.value = freq;
+        osc.detune.value = detuneCents;
+        lfoGain.connect(osc.detune);
+        const g = c.createGain();
+        g.gain.value = voiceIdx === 0 ? 0.4 : 0.34;
+        osc.connect(g).connect(master);
+        osc.start(t);
+        oscillators.push(osc);
+      });
+    });
+
+    // faint octave-up shimmer on the root only, amount varies per tone preset
+    const shimmer = c.createOscillator();
+    shimmer.type = "sine";
+    shimmer.frequency.value = rootFreq * 2;
+    const shimmerGain = c.createGain();
+    shimmerGain.gain.value = preset.shimmer;
+    shimmer.connect(shimmerGain).connect(master);
+    shimmer.start(t);
+    oscillators.push(shimmer);
+
+    activeWorshipPads[padEl.dataset.padId] = { master, oscillators, lfo, release: preset.release };
+    padEl.classList.add("playing");
+  }
+
+  function stopWorshipPad(padEl){
+    const active = activeWorshipPads[padEl.dataset.padId];
+    if(!active) return;
+    const c = wCtx(), t = c.currentTime;
+    active.master.gain.cancelScheduledValues(t);
+    active.master.gain.setValueAtTime(active.master.gain.value, t);
+    active.master.gain.linearRampToValueAtTime(0, t + active.release);
+    active.oscillators.forEach(osc=> osc.stop(t + active.release + 0.1));
+    active.lfo.stop(t + active.release + 0.1);
+    delete activeWorshipPads[padEl.dataset.padId];
+    padEl.classList.remove("playing");
+  }
+
+  function stopAllWorshipPads(){
+    Object.keys(activeWorshipPads).forEach(id=>{
+      const pad = document.querySelector('[data-pad-id="'+id+'"]');
+      if(pad) stopWorshipPad(pad);
+    });
+  }
+
+  document.querySelectorAll(".wpad").forEach((pad, i)=>{
+    pad.dataset.padId = "wpad" + i;
+    pad.addEventListener("pointerdown", (e)=>{
+      e.preventDefault();
+      const freq = Number(pad.getAttribute("data-freq"));
+      if(activeWorshipPads[pad.dataset.padId]){
+        stopWorshipPad(pad);
+        return;
+      }
+      stopAllWorshipPads();
+      startWorshipPad(pad, freq);
+    });
+  });
+
+  const majorBtn = document.getElementById("majorBtn");
+  const minorBtn = document.getElementById("minorBtn");
+  if(majorBtn && minorBtn){
+    majorBtn.addEventListener("click", ()=>{
+      if(chordMode === "major") return;
+      chordMode = "major";
+      majorBtn.classList.add("active");
+      minorBtn.classList.remove("active");
+      stopAllWorshipPads();
+    });
+    minorBtn.addEventListener("click", ()=>{
+      if(chordMode === "minor") return;
+      chordMode = "minor";
+      minorBtn.classList.add("active");
+      majorBtn.classList.remove("active");
+      stopAllWorshipPads();
+    });
+  }
+
+  const toneButtons = document.querySelectorAll(".tone-btn");
+  toneButtons.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const tone = btn.getAttribute("data-tone");
+      if(currentTone === tone) return;
+      currentTone = tone;
+      toneButtons.forEach(b=> b.classList.remove("active"));
+      btn.classList.add("active");
+      stopAllWorshipPads();
+    });
   });
 });
