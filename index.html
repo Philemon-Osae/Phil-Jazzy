@@ -110,88 +110,137 @@
 
 <script src="script.js"></script>
 
-<!-- PHIL JAZZY AI BOOKING ASSISTANT - START -->
+<!-- PHIL JAZZY AI BOOKING ASSISTANT V2 - LEFT SIDE PRO -->
 <style>
-#pj-ai-btn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;background:#d4af37;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);font-size:28px}
-#pj-ai-box{position:fixed;bottom:90px;right:20px;width:320px;height:420px;background:white;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:none;flex-direction:column;z-index:9999;font-family:sans-serif;overflow:hidden;border:2px solid #d4af37}
-#pj-ai-header{background:#0a0a0a;color:#d4af37;padding:12px;font-weight:bold;text-align:center}
-#pj-ai-messages{flex:1;padding:12px;overflow-y:auto;font-size:14px}
-.pj-msg{margin:8px 0;padding:10px 12px;border-radius:12px;max-width:80%}
-.pj-bot{background:#f3f3f3;color:#111;align-self:flex-start}
-.pj-user{background:#d4af37;color:black;align-self:flex-end;margin-left:auto}
-#pj-ai-input{display:flex;border-top:1px solid #eee}
-#pj-ai-input input{flex:1;padding:12px;border:none;outline:none}
-#pj-ai-input button{background:#0a0a0a;color:#d4af37;border:none;padding:0 16px;cursor:pointer;font-weight:bold}
+#pj-ai-btn{
+  position:fixed;bottom:20px;left:20px;width:65px;height:65px;
+  background:linear-gradient(135deg,#d4af37,#b8860b);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:999999;box-shadow:0 6px 25px rgba(212,175,55,.5);
+  font-size:30px;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+#pj-ai-box{
+  position:fixed;bottom:95px;left:20px;width:340px;max-width:90vw;height:480px;
+  background:white;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35);
+  display:none;flex-direction:column;z-index:999999;font-family:'Segoe UI',sans-serif;
+  overflow:hidden;border:2px solid #d4af37;
+}
+#pj-ai-header{
+  background:#0a0a0a;color:#d4af37;padding:14px;text-align:center;
+  font-weight:bold;font-size:15px;line-height:1.2
+}
+#pj-ai-messages{flex:1;padding:14px;overflow-y:auto;font-size:14px;display:flex;flex-direction:column;gap:8px;background:#fcfcfc}
+.pj-msg{padding:11px 14px;border-radius:16px;max-width:82%;line-height:1.4;animation:fadeIn .3s}
+.pj-bot{background:#111;color:#fff;border-bottom-left-radius:4px}
+.pj-user{background:#d4af37;color:#000;font-weight:500;align-self:flex-end;border-bottom-right-radius:4px}
+.pj-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pj-quick button{background:white;border:1px solid #d4af37;color:#b8860b;padding:6px 10px;border-radius:20px;font-size:12px;cursor:pointer}
+.pj-typing{font-style:italic;color:#888;font-size:12px}
+#pj-ai-input{display:flex;border-top:1px solid #eee;background:white}
+#pj-ai-input input{flex:1;padding:14px;border:none;outline:none;font-size:14px}
+#pj-ai-input button{background:#0a0a0a;color:#d4af37;border:none;padding:0 18px;cursor:pointer;font-weight:bold;font-size:16px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 
-<div id="pj-ai-btn">🤖</div>
+<div id="pj-ai-btn">💬</div>
 <div id="pj-ai-box">
-  <div id="pj-ai-header">Phil Jazzy AI Assistant ✨<br><small style="color:white;font-weight:normal">Replies instantly • Booking 24/7</small></div>
+  <div id="pj-ai-header">
+    Phil Jazzy AI 🤖<br>
+    <small style="color:#aaa;font-weight:normal;font-size:11px">🟢 Online • Replies instantly • Powered by AI</small>
+  </div>
   <div id="pj-ai-messages"></div>
   <div id="pj-ai-input">
-    <input id="pj-ai-text" placeholder="Ask about price, date..." />
-    <button id="pj-ai-send">Send</button>
+    <input id="pj-ai-text" placeholder="Type: price, availability..." autocomplete="off"/>
+    <button id="pj-ai-send">➤</button>
   </div>
 </div>
 
 <script>
-const btn = document.getElementById('pj-ai-btn');
-const box = document.getElementById('pj-ai-box');
-const msgs = document.getElementById('pj-ai-messages');
-const input = document.getElementById('pj-ai-text');
-const sendBtn = document.getElementById('pj-ai-send');
+(function(){
+const btn=document.getElementById('pj-ai-btn');
+const box=document.getElementById('pj-ai-box');
+const msgs=document.getElementById('pj-ai-messages');
+const input=document.getElementById('pj-ai-text');
+const sendBtn=document.getElementById('pj-ai-send');
+let data={event:'',date:'',budget:''}, step=0, opened=false;
 
-let step = 0;
-let userData = {};
+const quickReplies = ["💰 Price List","📅 Check Availability","🎥 Watch Demo","📍 My Event is..."];
 
-const replies = [
-  "Hi! I'm Phil Jazzy's AI booking assistant 🥁 How can I help you get booked today?",
-  "Got it! What's the date and location of your event?",
-  "Nice! Last one — what's your budget? (e.g., GH₵300-500)",
-];
-
-function addMsg(text, isUser=false){
-  const d = document.createElement('div');
-  d.className = `pj-msg ${isUser? 'pj-user' : 'pj-bot'}`;
-  d.innerText = text;
+function addMsg(text,isUser=false, withQuick=false){
+  const d=document.createElement('div');
+  d.className=`pj-msg ${isUser?'pj-user':'pj-bot'}`;
+  d.innerHTML=text;
   msgs.appendChild(d);
-  msgs.scrollTop = msgs.scrollHeight;
+  if(withQuick && !isUser){
+    const q=document.createElement('div');q.className='pj-quick';
+    quickReplies.forEach(t=>{
+      const b=document.createElement('button');b.innerText=t;
+      b.onclick=()=>{input.value=t;send();};
+      q.appendChild(b);
+    });
+    msgs.appendChild(q);
+  }
+  msgs.scrollTop=msgs.scrollHeight;
 }
 
-function botReply(userText){
-  const lower = userText.toLowerCase();
-  if(lower.includes('price') || lower.includes('cost') || lower.includes('how much')){
-    addMsg("For Weddings: GH₵400-600, Church events: GH₵250-400, Studio: GH₵200/hr. Our AI smart calculator can give you an exact quote! What type of event is yours?");
-    return;
+function typingThen(text,withQuick=false){
+  const t=document.createElement('div');t.className='pj-typing';t.innerText='AI is typing...';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{t.remove();addMsg(text,false,withQuick);}, 900);
+}
+
+function send(){
+  const val=input.value.trim();if(!val)return;
+  addMsg(val,true); input.value='';
+  handle(val);
+}
+
+function handle(txt){
+  const l=txt.toLowerCase();
+  // SMART KEYWORD DETECTION
+  if(l.includes('price')||l.includes('cost')||l.includes('how much')||l.includes('💰')){
+    typingThen("Here's my rate card 👇<br><br>• Church Service: GH₵250-400<br>• Wedding: GH₵400-700<br>• Studio/Recording: GH₵200/hr<br>• Full Band: GH₵800+<br><br>Tell me your <b>event type</b> and I’ll give you exact quote + discount!", true); return;
   }
-  if(lower.includes('available') || lower.includes('free')){
-    addMsg("🟢 I'm checking availability... We are open! What date are you looking at? I'll confirm in 5 mins on WhatsApp.");
-    return;
+  if(l.includes('available')||l.includes('free')||l.includes('date')||l.includes('📅')){
+    typingThen("🟢 I’m checking Phil Jazzy’s calendar...<br><br>He's available this week! What date is your event? Format: e.g., 5th Oct, Accra"); return;
   }
-  if(step < 3){
-    userData[`q${step}`] = userText;
-    if(step < 2){
-      setTimeout(()=>addMsg(replies[step+1]), 600);
-      step++;
-    } else {
-      setTimeout(()=>{
-        addMsg(`Perfect! ✨ I've packaged your request: ${userData.q0} on ${userData.q1}. Budget: ${userText}. \n\nTap below to send to Phil Jazzy on WhatsApp for instant confirmation!`);
-        const wa = document.createElement('a');
-        wa.href = `https://wa.me/233206834470?text=Hi%20Phil%20Jazzy!%20AI%20Assistant%20Booking:%20Event=${encodeURIComponent(userData.q0)}%20Date=${encodeURIComponent(userData.q1)}%20Budget=${encodeURIComponent(userText)}`;
-        wa.target="_blank";
-        wa.innerText="📲 Send to WhatsApp Now";
-        wa.style="display:block;background:#25D366;color:white;text-align:center;padding:10px;border-radius:8px;margin-top:10px;text-decoration:none;font-weight:bold";
-        msgs.appendChild(wa);
-      }, 600);
-      step++;
-    }
+  if(l.includes('demo')||l.includes('🎥')||l.includes('video')){
+    typingThen("Watch Phil Jazzy in action 🥁<br><br>👉 <a href='https://instagram.com/phil_jazzy' target='_blank'>Instagram @phil_jazzy</a><br><br>Want to book him after watching? Tell me your event date!"); return;
+  }
+  // CONVERSATIONAL FLOW
+  if(step===0){
+    data.event=txt; step=1;
+    typingThen(`Love it! <b>${txt}</b> — great choice. 🔥<br><br>When & where is it? (e.g., 12th Dec, Kumasi)`);
+  } else if(step===1){
+    data.date=txt; step=2;
+    typingThen(`Perfect — noted: <b>${txt}</b>.<br><br>What's your budget range? This helps me give you best package (GH₵250 - GH₵1200+)`);
+  } else if(step===2){
+    data.budget=txt;
+    typingThen(`Amazing! I've built your booking summary:<br><br>🎵 Event: ${data.event}<br>📅 Date: ${data.date}<br>💰 Budget: ${txt}<br><br>Tap below to send to Phil Jazzy on WhatsApp — he'll confirm in 5 mins!`);
+    setTimeout(()=>{
+      const wa=document.createElement('a');
+      wa.href=`https://wa.me/233206834470?text=${encodeURIComponent(`Hi Phil Jazzy! 🤖 AI Booking:\nEvent: ${data.event}\nDate: ${data.date}\nBudget: ${data.budget}\n\nFrom your website chatbot`)}`;
+      wa.target="_blank";
+      wa.innerHTML="📲 SEND TO WHATSAPP & GET CONFIRMED";
+      wa.style="display:block;background:#25D366;color:white;text-align:center;padding:12px;border-radius:10px;margin-top:10px;text-decoration:none;font-weight:bold;box-shadow:0 4px 12px rgba(37,211,102,.4)";
+      msgs.appendChild(wa); msgs.scrollTop=msgs.scrollHeight;
+    },1200);
+    step=3;
+  } else {
+    typingThen("Got it! I've already prepared your summary above 👆 Tap the green WhatsApp button to confirm. Or type 'restart' to start over.", true);
+    if(l.includes('restart')){data={};step=0; setTimeout(()=>typingThen("Restarted! What type of event do you have? (Wedding, Church, Recording...)", true),500);}
   }
 }
 
-btn.onclick = ()=>{ box.style.display = box.style.display==='flex'?'none':'flex'; if(msgs.innerHTML==='') addMsg(replies[0]); };
-sendBtn.onclick = ()=>{ if(!input.value.trim()) return; addMsg(input.value,true); botReply(input.value); input.value=''; };
-input.onkeypress = (e)=>{ if(e.key==='Enter') sendBtn.click(); };
+btn.onclick=()=>{
+  box.style.display=box.style.display==='flex'?'none':'flex';
+  if(!opened){addMsg("Hi! I'm Phil Jazzy's AI assistant 🤖<br><br>I can check price, availability, and book you in 30 seconds.<br><br><b>What event do you have?</b>",false,true); opened=true;}
+};
+sendBtn.onclick=send;
+input.onkeypress=(e)=>{if(e.key==='Enter')send();};
+})();
 </script>
-<!-- PHIL JAZZY AI BOOKING ASSISTANT - END -->
+<!-- END V2 -->
 </body>
 </html>
