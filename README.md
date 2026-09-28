@@ -1,7 +1,7 @@
 # Phil Jazzy — Professional Drummer Portfolio & Interactive Audio Lab
 
 **Live:** https://phil-jazzy.netlify.app
-**Student:** La Philemon — GCTU BSc Web Application Development L100
+**Student:** Philemon Osae-Hienno Kodua — GCTU BSc Web Application Development L100
 **Role:** Full-Stack Developer + Drummer
 
 ### Project Overview
