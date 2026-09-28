@@ -28,7 +28,7 @@ Personal brand website for a professional drummer based in Accra, Ghana. Built t
    - Socials: @phil_jazzy (TikTok/IG)
 
 ### Tech Stack
-Next.js, Tailwind CSS, Web Audio API, Vercel/Netlify
+Next.js, Tailwind CSS, Web Audio API, Netlify
 
 ### Courses to Submit
 - CSIT 101: Web Development
