@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://phil-jazzy.netlify.app/sitemap.xml
