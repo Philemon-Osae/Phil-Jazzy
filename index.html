@@ -2,151 +2,172 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Philemon Osae-Hienno Kodua | Full-Stack Developer</title>
-<meta name="google-site-verification" content="wQvwOsSiwISzVpbfcx9eXFs2h2bcJipBV-47EO8mG7A" />
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-body{background:#fff;color:#111;transition:0.3s;line-height:1.6}
-body.dark{background:#0a0a0a;color:#fff}
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid #eee;position:sticky;top:0;background:inherit;z-index:10}
-body.dark nav{border-color:#222}
-.logo{font-weight:900;font-size:20px}.logo span{color:#16a34a}
-.btn{padding:10px 18px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;display:inline-block;cursor:pointer}
-.btn-black{background:#000;color:#fff}body.dark .btn-black{background:#fff;color:#000}
-.btn-green{border:1.5px solid #16a34a;color:#16a34a}
-.btn-outline{border:1px solid #ddd;color:#666}body.dark .btn-outline{border-color:#333;color:#aaa}
-.hero{padding:50px 20px;max-width:1100px;margin:auto;display:grid;grid-template-columns:1.2fr 0.8fr;gap:30px;align-items:center}
-@media(max-width:800px){.hero{grid-template-columns:1fr}.hero-img{order:-1}}
-.hero-img img{width:100%;max-width:320px;border-radius:24px;border:4px solid #f3f4f6;object-fit:cover}body.dark .hero-img img{border-color:#222}
-.hero h1{font-size:48px;line-height:0.95;font-weight:900;letter-spacing:-1px}
-@media(max-width:500px){.hero h1{font-size:36px}}
-.badge{color:#16a34a;font-weight:700;font-size:12px;margin-bottom:12px;display:inline-block;background:#f0fdf4;padding:6px 10px;border-radius:20px}
-.meta{margin-top:18px;font-size:13px;color:#888;display:flex;gap:12px;flex-wrap:wrap}
-.section{padding:50px 20px;max-width:1100px;margin:auto}
-.small{font-family:monospace;font-size:11px;letter-spacing:2.5px;color:#999;margin-bottom:24px;font-weight:700}
-.card{border:1px solid #eee;border-radius:18px;padding:22px;background:#fff;display:block}body.dark .card{background:#151515;border-color:#222}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
-@media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}}
-.tag{font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px;background:#f3f4f6;display:inline-block;margin-top:6px}
-.green{color:#16a34a;background:#f0fdf4}
-footer{border-top:1px solid #eee;padding:35px 20px;text-align:center;font-size:13px;color:#888;margin-top:20px}body.dark footer{border-color:#222}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phil Jazzy | Professional Drummer in Ghana - Book for Events </title>
+<meta name="description" content="Phil Jazzy is Ghana's professional drummer based in Accra. Book for Church, Weddings, Concerts, Studio.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://phil-jazzy.netlify.app/">
+<link rel="stylesheet" href="style.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0F0GMCF3WE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-0F0GMCF3WE');
+</script>
 </head>
 <body>
+
+<div id="progress"></div>
 <nav>
-  <div class="logo">Philemon<span>.dev</span></div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button onclick="document.body.classList.toggle('dark')" class="btn btn-outline" style="padding:8px 12px">🌙 / ☀️</button>
-    <a href="cv.html?download=1" class="btn btn-black">Download CV</a>
-  </div>
+  <a href="#home">Home</a>
+  <a href="#about">About</a>
+  <a href="#services">Services</a>
+  <a href="#drumkit">Drum Kit</a>
+  <a href="#worship">Worship Pad</a>
+  <a href="#contact">Contact</a>
 </nav>
-<div class="hero">
-  <div>
-    <span class="badge">● Abomosu STEM Alumni '26 • Level 100 GCTU Student • Available for Internship</span>
-    <h1>PHILEMON<br>OSAE-HIENNO<br>KODUA</h1>
-    <h2 style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px">
-      <span style="background:#111;color:#fff;padding:5px 12px;border-radius:20px;font-size:14px;font-weight:800">Full-Stack Developer</span>
-      <span style="color:#555;font-size:16px;font-weight:600">React Native + Node.js</span>
-    </h2>
-    <p style="margin-top:16px;color:#666;max-width:600px;font-size:15px">
-      Engineering at <b>Abomosu STEM SHS (Dec 2023 - June 2026)</b> where I built Healthy Habits for GSTEP 2023.
-      Self-taught at <b>Techten Planets IT</b> during vacations since 2023.
-      Now <b>Level 100 BSc Web App Development student at GCTU</b>. Founder of 6 live platforms.
-    </p>
-    <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap">
-      <a href="https://github.com/Philemon-Osae" target="_blank" class="btn btn-black">GitHub →</a>
-      <a href="cv.html?download=1" class="btn btn-green">Download CV</a>
-      <a href="cv.html" target="_blank" class="btn btn-outline">View CV</a>
+
+<div class="hero" id="home">
+  <div id="notes"></div>
+  <h1 class="glow">PHIL JAZZY</h1>
+  <p class="sub">GCTU STUDENT • PROFESSIONAL DRUMMER</p>
+  <p class="tag" id="rotatingTag">Pocket & Feel</p>
+  <p class="intro">Web application Development student at GCTU, Accra. Drummer for churches, weddings, studios & concerts.</p>
+  <div class="buttons">
+    <a class="btn gold-btn" href="https://wa.me/233206834470?text=Hi%20Phil%20Jazzy%20-%20I%20want%20to%20book%20you" target="_blank" rel="noopener">BOOK NOW · 020 683 4470</a>
+    <a class="btn outline" href="https://www.tiktok.com/@phil.jazzy" target="_blank" rel="noopener">TikTok</a>
+    <a class="btn outline" href="https://www.instagram.com/phil_jazzy" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <h2 class="section-title" id="about">ABOUT ME</h2>
+  <div class="card">
+    <p>Phil Jazzy(professionally known as Osae-Hienno Philemon Kodua) is a GCTU student (Web application Development) and a professional drummer based in <b>Accra - Ghana 🇬🇭</b>. I focus on pocket, feel, and serving the song. I balance code 💻 and drums 🥁.</p>
+  </div>
+
+  <h2 class="section-title" id="services">WHAT I DO</h2>
+  <div class="card">
+    <p>✔ Church Programs<br>✔ Weddings & Events<br>✔ Studio Recording<br>✔ Concerts & Live Shows</p>
+    <p><b>Available:</b> Fri – Sun &nbsp;|&nbsp; <b>Location:</b> Accra, Ghana</p>
+  </div>
+
+  <h2 class="section-title" id="drumkit">TRY MY KIT</h2>
+  <div class="card" style="text-align:center">
+    <p class="kit-hint">Tap the pads, or use your keyboard: Q W E A S D Z X C</p>
+    <div class="pads">
+      <div class="pad" data-key="q" data-sound="kick">Kick</div>
+      <div class="pad" data-key="w" data-sound="snare">Snare</div>
+      <div class="pad" data-key="e" data-sound="hihat">Hi-Hat</div>
+      <div class="pad" data-key="a" data-sound="tom">Tom</div>
+      <div class="pad" data-key="s" data-sound="ride">Ride</div>
+      <div class="pad" data-key="d" data-sound="crash">Crash</div>
+      <div class="pad" data-key="z" data-sound="clap">Clap</div>
+      <div class="pad" data-key="x" data-sound="cowbell">Cowbell</div>
+      <div class="pad" data-key="c" data-sound="rimshot">Rimshot</div>
     </div>
-    <div class="meta"><span>📧 philemonosae1@gmail.com</span><span>📱 +233 20 683 4470</span><span>📍 Accra, Ghana</span></div>
   </div>
-  <div class="hero-img" style="text-align:center">
-    <img src="profile.jpg" alt="Philemon">
-    <div style="margin-top:12px;font-size:12px;color:#888;font-family:monospace">Abomosu STEM Eng 23-26 • Techten 23-26 • GSTEP 23 • GCTU L100</div>
+
+  <h2 class="section-title" id="worship">WORSHIP PAD</h2>
+  <div class="card" style="text-align:center">
+    <p class="kit-hint">Tap a note to sustain a warm chord — tap again, or tap another note, to stop it. Switch Major/Minor below.</p>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="majorBtn">Major</button>
+      <button class="mode-btn" id="minorBtn">Minor</button>
+    </div>
+    <div class="tone-toggle">
+      <button class="tone-btn active" data-tone="warm">Warm</button>
+      <button class="tone-btn" data-tone="bright">Bright</button>
+      <button class="tone-btn" data-tone="strings">Strings</button>
+      <button class="tone-btn" data-tone="airy">Airy Choir</button>
+    </div>
+    <div class="pads">
+      <div class="wpad" data-freq="261.63">C</div>
+      <div class="wpad" data-freq="277.18">C#</div>
+      <div class="wpad" data-freq="293.66">D</div>
+      <div class="wpad" data-freq="311.13">D#</div>
+      <div class="wpad" data-freq="329.63">E</div>
+      <div class="wpad" data-freq="349.23">F</div>
+      <div class="wpad" data-freq="369.99">F#</div>
+      <div class="wpad" data-freq="392.00">G</div>
+      <div class="wpad" data-freq="415.30">G#</div>
+      <div class="wpad" data-freq="440.00">A</div>
+      <div class="wpad" data-freq="466.16">A#</div>
+      <div class="wpad" data-freq="493.88">B</div>
+    </div>
+  </div>
+
+  <h2 class="section-title" id="contact">CONTACT</h2>
+  <div class="card">
+    <p>📞 <a href="tel:0206834470">020 683 4470</a><br>🎵 TikTok: @phil.jazzy<br>📸 IG: @phil_jazzy<br>📍 Accra, Ghana</p>
+    <button class="btn gold-btn" id="bookBtn">Quick Book on WhatsApp</button>
   </div>
 </div>
 
-<div class="section" style="background:#fafafa;border-top:1px solid #eee;border-bottom:1px solid #eee">
-  <div class="small">01 / EDUCATION</div>
-  <div class="grid3">
-    <div class="card" style="border-left:4px solid #0ea5e9"><h3>Abomosu STEM SHS</h3><span class="tag" style="background:#0ea5e9;color:#fff">DEC 2023 - JUNE 2026 • COMPLETED</span><p style="font-size:14px;margin-top:10px;color:#444">Built Healthy Habits for GSTEP 2023 in SHS 1.</p></div>
-    <div class="card" style="border-left:4px solid #16a34a"><h3>Techten Planets IT</h3><span class="tag green">2023 - 2026 • VACATION TRAINING</span><p style="font-size:14px;margin-top:10px;color:#444">HTML, CSS, JS, Node.js, Express, MySQL during SHS vacations.</p></div>
-    <div class="card" style="border-left:4px solid #000"><h3>GCTU</h3><span class="tag" style="background:#111;color:#fff">OCT 2026 - PRESENT • LEVEL 100</span><p style="font-size:14px;margin-top:10px;color:#444">Currently Level 100 student. Leading 6-person Healthy Habits team.</p></div>
-  </div>
+<button id="toTop" aria-label="Back to top">↑</button>
+<footer>© 2026 Phil Jazzy · GCTU Student · Accra, Ghana</footer>
+<script src="script.js"></script>
+
+<style>
+#pj-ai-btn{position:fixed;bottom:20px;left:20px;width:65px;height:65px;background:linear-gradient(135deg,#d4af37,#b8860b);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999999;box-shadow:0 6px 25px rgba(212,175,55,.5);font-size:30px;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+#pj-ai-box{position:fixed;bottom:95px;left:20px;width:340px;max-width:90vw;height:480px;background:white;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35);display:none;flex-direction:column;z-index:999999;font-family:'Segoe UI',sans-serif;overflow:hidden;border:2px solid #d4af37}
+#pj-ai-header{background:#0a0a0a;color:#d4af37;padding:14px;text-align:center;font-weight:bold}
+#pj-ai-messages{flex:1;padding:14px;overflow-y:auto;font-size:14px;display:flex;flex-direction:column;gap:8px;background:#fcfcfc}
+.pj-msg{padding:11px 14px;border-radius:16px;max-width:82%;line-height:1.4}
+.pj-bot{background:#111;color:#fff;border-bottom-left-radius:4px}
+.pj-user{background:#d4af37;color:#000;font-weight:500;align-self:flex-end;border-bottom-right-radius:4px}
+.pj-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pj-quick button{background:white;border:1px solid #d4af37;color:#b8860b;padding:6px 10px;border-radius:20px;font-size:12px;cursor:pointer}
+.pj-typing{font-style:italic;color:#888;font-size:12px}
+#pj-ai-input{display:flex;border-top:1px solid #eee}
+#pj-ai-input input{flex:1;padding:14px;border:none;outline:none}
+#pj-ai-input button{background:#0a0a0a;color:#d4af37;border:none;padding:0 18px;cursor:pointer;font-weight:bold}
+</style>
+<div id="pj-ai-btn">🥁</div>
+<div id="pj-ai-box">
+  <div id="pj-ai-header">Phil Jazzy AI 🤖<br><small style="color:#aaa;font-weight:normal;font-size:11px">🟢 Online • Drums • TikTok @phil.jazzy</small></div>
+  <div id="pj-ai-messages"></div>
+  <div id="pj-ai-input"><input id="pj-ai-text" placeholder="Type: price, availability..." /><button id="pj-ai-send">➤</button></div>
 </div>
 
-<div class="section" id="projects">
-  <div class="small">02 / LIVE PROJECTS - 6 LIVE</div>
-  <div class="grid">
-    
-    <a href="https://phil-tech-two.vercel.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #0b2a7a">
-      <h3>Phil Tech ⚡</h3>
-      <span class="tag green">phil-tech-two.vercel.app • LIVE • LEAD SYSTEM</span>
-      <p style="font-size:14px;margin-top:10px;color:#444">
-        Booking platform for GCTU campus businesses. Students choose a package (Basic GHC 500-800, Standard 1200-1800, Premium 2500-4000), fill business info, MoMo, delivery fee, domain & colors — one tap sends booking direct to my WhatsApp DM (0206834470) so I know what e-commerce site to build for them.
-      </p>
-      <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
-        <span class="tag" style="background:#0b2a7a;color:#fff">HTML</span>
-        <span class="tag" style="background:#0b2a7a;color:#fff">CSS</span>
-        <span class="tag" style="background:#0b2a7a;color:#fff">VANILLA JS</span>
-        <span class="tag" style="background:#000;color:#fff">VERCEL</span>
-        <span class="tag" style="background:#25d366;color:#fff">wa.me API</span>
-      </div>
-      <p style="font-size:11px;color:#666;margin-top:10px;font-family:monospace">Purpose: Convert campus hustles into real online stores • No backend • 100% mobile</p>
-    </a>
-
-    <a href="https://phil-jazzy.netlify.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #eab308">
-      <h3>Phil Jazzy 🥁</h3>
-      <span class="tag green">phil-jazzy.netlify.app • LIVE • INTERACTIVE</span>
-      <p style="font-size:14px;margin-top:10px;color:#444">
-        Personal brand site for my drumming side — GCTU student & pro drummer in Accra. Built 2 interactive tools: TRY MY KIT (9-pad drum machine with keyboard Q,W,E,A,S,D,Z,X,C) + WORSHIP PAD (12-note chord sustainer with Major/Minor & Warm/Bright/Strings/Airy modes). Includes Phil Jazzy AI assistant that gives rate card (Church 250-400, Wedding 400-700, Studio 200/hr, Full Band 800+) & books in 30s via WhatsApp DM.
-      </p>
-      <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap">
-        <span class="tag" style="background:#eab308;color:#000">HTML</span>
-        <span class="tag" style="background:#eab308;color:#000">CSS</span>
-        <span class="tag" style="background:#eab308;color:#000">VANILLA JS</span>
-        <span class="tag" style="background:#000;color:#fff">Web Audio API</span>
-        <span class="tag" style="background:#111;color:#fff">AI Chatbot</span>
-        <span class="tag" style="background:#000;color:#fff">NETLIFY</span>
-        <span class="tag" style="background:#25d366;color:#fff">wa.me API</span>
-      </div>
-      <p style="font-size:11px;color:#666;margin-top:10px;font-family:monospace">Purpose: Book church/wedding gigs + showcase skills • Available Fri-Sun • Accra</p>
-    </a>
-    
-    <a href="https://kwamepapaa.netlify.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #111"><h3>Kwamepapaa 🥁</h3><span class="tag green">kwamepapaa.netlify.app • LIVE</span><p style="font-size:14px;margin-top:10px;color:#666">Drummer portfolio.</p></a>
-    
-    <a href="https://weddinginvitation-gh.netlify.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #16a34a"><h3>Wedding Invitation V1 💍</h3><span class="tag green">weddinginvitation-gh.netlify.app • V1 • LIVE</span><p style="font-size:14px;margin-top:10px;color:#666">First version, Bakatel & Juliet basic.</p></a>
-    
-    <a href="https://wedding-invitation-gh.netlify.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #eab308"><h3>Wedding Invitation V2 💍✨</h3><span class="tag green">wedding-invitation-gh.netlify.app • V2 • LIVE</span><p style="font-size:14px;margin-top:10px;color:#666">Envelope open, floating hearts, calendar 5th circled, New Creation Chapel Tesano, guest wish wall.</p></a>
-    
-    <a href="https://adom-the-trombonist-gh.netlify.app" target="_blank" class="card" style="text-decoration:none;color:inherit;border-left:4px solid #16a34a"><h3>Adom Trombonist 🪊</h3><span class="tag green">adom-the-trombonist-gh.netlify.app • LIVE</span><p style="font-size:14px;margin-top:10px;color:#666">Trombonist portfolio + bookings.</p></a>
-
-  </div>
-</div>
-
-<div class="section" style="background:#fafafa;border-top:1px solid #eee;border-bottom:1px solid #eee">
-  <div class="small">03 / SERVICES - PHIL TECH</div>
-  <div class="grid3">
-    <div class="card" style="border-left:4px solid #16a34a"><h3>Web Development</h3><span class="tag green">REACT • HTML • CSS • JS</span><p style="font-size:14px;margin-top:10px;color:#444">Modern, mobile friendly business websites, booking platforms, and e-commerce sites built for speed and SEO.</p></div>
-    <div class="card" style="border-left:4px solid #000"><h3>Mobile App Development</h3><span class="tag" style="background:#111;color:#fff">REACT NATIVE • EXPO</span><p style="font-size:14px;margin-top:10px;color:#444">Android and iOS apps with login, push notifications, and Play Store deployment. One codebase, both platforms.</p></div>
-    <div class="card" style="border-left:4px solid #0ea5e9"><h3>Backend & API Integration</h3><span class="tag" style="background:#0ea5e9;color:#fff">NODE.JS • EXPRESS • FIREBASE • MYSQL</span><p style="font-size:14px;margin-top:10px;color:#444">Secure backends, databases, auth systems, and API integration for Paystack, Hubtel, WhatsApp, and Google Maps.</p></div>
-  </div>
-  <div style="text-align:center;margin-top:28px">
-    <a href="https://wa.me/233206834470?text=Hello%20Phil%20Tech,%20I%20need%20a%20website/app" target="_blank" class="btn btn-black" style="background:#16a34a;border:none;color:#fff">Hire Me on WhatsApp →</a>
-    <p style="font-size:12px;color:#888;margin-top:10px">Available for Internships, Freelance Projects, and Remote Work</p>
-  </div>
-</div>
-
-<footer>
-  <b style="color:#111">PHILEMON OSAE-HIENNO KODUA</b>
-  <p style="margin-top:6px">Abomosu STEM Eng 23-26 • Techten 23-26 • GCTU Level 100 Student • 6 Live Platforms</p>
-  <div style="margin-top:14px;display:flex;gap:16px;justify-content:center;font-family:monospace">
-    <a href="cv.html?download=1" style="color:#16a34a;font-weight:800">Download CV</a><a href="cv.html" target="_blank">View CV</a><a href="https://github.com/Philemon-Osae" target="_blank">GitHub</a>
-  </div>
-  <p style="margin-top:18px;font-size:11px">© 2026 • Abomosu STEM Alumni • GCTU Level 100</p>
-</footer>
+<script>
+(function(){
+const btn=document.getElementById('pj-ai-btn');
+const box=document.getElementById('pj-ai-box');
+const msgs=document.getElementById('pj-ai-messages');
+const input=document.getElementById('pj-ai-text');
+const sendBtn=document.getElementById('pj-ai-send');
+let data={event:'',date:'',budget:''}, step=0, opened=false;
+const quickReplies=["💰 Price List","📅 Availability","🎥 TikTok Demo","📍 My Event..."];
+function addMsg(t,u=false,q=false){const d=document.createElement('div');d.className=`pj-msg ${u?'pj-user':'pj-bot'}`;d.innerHTML=t;msgs.appendChild(d);if(q&&!u){const w=document.createElement('div');w.className='pj-quick';quickReplies.forEach(x=>{const b=document.createElement('button');b.innerText=x;b.onclick=()=>{input.value=x;send();};w.appendChild(b);});msgs.appendChild(w);}msgs.scrollTop=msgs.scrollHeight;}
+function typingThen(t,q=false){const x=document.createElement('div');x.className='pj-typing';x.innerText='AI is typing...';msgs.appendChild(x);msgs.scrollTop=msgs.scrollHeight;setTimeout(()=>{x.remove();addMsg(t,false,q);},800);}
+function send(){const v=input.value.trim();if(!v)return;addMsg(v,true);input.value='';handle(v);}
+function handle(txt){
+  const l=txt.toLowerCase();
+  if(l.includes('price')||l.includes('💰')){typingThen("Phil Jazzy Rate Card 👇<br><br>• Church Service: GH₵250-400<br>• Wedding: GH₵400-700<br>• Studio/Recording: GH₵200/hr<br>• Full Band: GH₵800+<br><br>Tell me your <b>event type</b> for exact quote!",true);return;}
+  if(l.includes('available')||l.includes('📅')){typingThen("🟢 Checking Phil Jazzy's calendar... He's free this week! What date? e.g., 5th Dec, Accra",true);return;}
+  if(l.includes('tiktok')||l.includes('demo')||l.includes('🎥')||l.includes('watch')){
+    typingThen("Watch Phil Jazzy live 🥁🔥<br><br>👉 <a href='https://www.tiktok.com/@phil.jazzy' target='_blank' style='color:#d4af37;font-weight:bold;text-decoration:none'>TikTok @phil.jazzy</a><br>Grooves, chops & live sessions!<br><br>Like what you see? Tell me your event date!",true);return;
+  }
+  if(step===0){data.event=txt;step=1;typingThen(`Love it! <b>${txt}</b> 🔥<br><br>When & where is it?`);}
+  else if(step===1){data.date=txt;step=2;typingThen(`Perfect — noted: <b>${txt}</b><br><br>What's your budget? (GH₵250 - GH₵1200+)`);}
+  else if(step===2){
+    data.budget=txt;
+    typingThen(`Amazing! Summary:<br><br>🎵 Event: ${data.event}<br>📅 Date: ${data.date}<br>💰 Budget: ${txt}<br><br>Tap below to send to Phil Jazzy!`);
+    setTimeout(()=>{
+      const wa=document.createElement('a');
+      wa.href=`https://wa.me/233206834470?text=${encodeURIComponent(`Hi Phil Jazzy! 🤖 AI Booking:\nEvent: ${data.event}\nDate: ${data.date}\nBudget: ${data.budget}\n\nFrom your website chatbot`)}`;
+      wa.target="_blank";wa.innerHTML="📲 SEND TO WHATSAPP & GET CONFIRMED";
+      wa.style="display:block;background:#25D366;color:white;text-align:center;padding:12px;border-radius:10px;margin-top:10px;text-decoration:none;font-weight:bold";
+      msgs.appendChild(wa);msgs.scrollTop=msgs.scrollHeight;
+    },1000);step=3;
+  } else {typingThen("Summary above 👆 Tap WhatsApp. Type 'restart' to start over.",true); if(l.includes('restart')){data={};step=0;setTimeout(()=>typingThen("Restarted! What event do you have?",true),500);}}
+}
+btn.onclick=()=>{box.style.display=box.style.display==='flex'?'none':'flex';if(!opened){addMsg("Hi! I'm Phil Jazzy's AI assistant 🤖<br><br>I can check price, availability & book you in 30 secs.<br>Plus see his TikTok demos.<br><br><b>What event do you have?</b>",false,true);opened=true;}};
+sendBtn.onclick=send;input.onkeypress=(e)=>{if(e.key==='Enter')send();};
+})();
+</script>
 </body>
 </html>
