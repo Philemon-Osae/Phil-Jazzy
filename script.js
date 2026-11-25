@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   "use strict";
 
   // ==========================================
-  // 1. GENERAL HELPERS
+  // 1. HELPERS
   // ==========================================
 
   const $ = (selector, parent = document) =>
@@ -12,26 +12,58 @@ document.addEventListener("DOMContentLoaded", () => {
   const $$ = (selector, parent = document) =>
     [...parent.querySelectorAll(selector)];
 
-  const prefersReducedMotion =
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
 
   // ==========================================
-  // 2. WHATSAPP BOOKING
+  // 2. MOBILE NAVIGATION
   // ==========================================
 
-  const bookBtn = $("#bookBtn");
+  const menuToggle = $("#menuToggle");
+  const navLinks = $("#navLinks");
 
-  if (bookBtn) {
-    bookBtn.addEventListener("click", () => {
-      const message = encodeURIComponent(
-        "Hi Phil Jazzy! I'm interested in booking you for an event. Please let me know your availability and booking details."
-      );
+  if (menuToggle && navLinks) {
+    const closeMenu = () => {
+      navLinks.classList.remove("open");
+      menuToggle.classList.remove("active");
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.setAttribute("aria-label", "Open navigation menu");
+      document.body.classList.remove("menu-open");
+    };
 
-      window.open(
-        `https://wa.me/233206834470?text=${message}`,
-        "_blank",
-        "noopener,noreferrer"
-      );
+    const openMenu = () => {
+      navLinks.classList.add("open");
+      menuToggle.classList.add("active");
+      menuToggle.setAttribute("aria-expanded", "true");
+      menuToggle.setAttribute("aria-label", "Close navigation menu");
+      document.body.classList.add("menu-open");
+    };
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.contains("open");
+
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    $$("a", navLinks).forEach(link => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 850) {
+        closeMenu();
+      }
     });
   }
 
@@ -44,13 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateProgress() {
     if (!progress) return;
 
-    const scrollable =
+    const scrollHeight =
       document.documentElement.scrollHeight - window.innerHeight;
 
-    const percentage =
-      scrollable > 0
-        ? (window.scrollY / scrollable) * 100
-        : 0;
+    const percentage = scrollHeight > 0
+      ? (window.scrollY / scrollHeight) * 100
+      : 0;
 
     progress.style.width = `${percentage}%`;
   }
@@ -69,54 +100,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (toTop) {
     window.addEventListener("scroll", () => {
-      toTop.classList.toggle(
-        "show",
-        window.scrollY > 400
-      );
+      toTop.classList.toggle("show", window.scrollY > 400);
     }, { passive: true });
 
     toTop.addEventListener("click", () => {
       window.scrollTo({
         top: 0,
-        behavior: prefersReducedMotion ? "instant" : "smooth"
+        behavior: reducedMotion ? "instant" : "smooth"
       });
     });
   }
 
   // ==========================================
-  // 5. SCROLL REVEAL ANIMATIONS
+  // 5. SCROLL REVEAL
   // ==========================================
 
-  const revealElements = $$(".card, .reveal");
+  const cards = $$(".card");
 
-  if ("IntersectionObserver" in window && !prefersReducedMotion) {
-    const revealObserver = new IntersectionObserver(
-      (entries, observer) => {
+  if ("IntersectionObserver" in window && !reducedMotion) {
+    const observer = new IntersectionObserver(
+      (entries, currentObserver) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
+            currentObserver.unobserve(entry.target);
           }
         });
       },
       { threshold: 0.12 }
     );
 
-    revealElements.forEach(element => {
-      revealObserver.observe(element);
-    });
+    cards.forEach(card => observer.observe(card));
   } else {
-    revealElements.forEach(element => {
-      element.classList.add("visible");
-    });
+    cards.forEach(card => card.classList.add("visible"));
   }
 
   // ==========================================
   // 6. ACTIVE NAVIGATION
   // ==========================================
 
-  const navLinks = $$(".nav a[href^='#']");
-  const sections = navLinks
+  const navAnchors = $$(".nav-links a[href^='#']");
+  const sections = navAnchors
     .map(link => $(link.getAttribute("href")))
     .filter(Boolean);
 
@@ -126,13 +150,13 @@ document.addEventListener("DOMContentLoaded", () => {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
 
-          navLinks.forEach(link => {
-            const active =
+          navAnchors.forEach(link => {
+            const isActive =
               link.getAttribute("href") === `#${entry.target.id}`;
 
-            link.classList.toggle("active", active);
+            link.classList.toggle("active", isActive);
 
-            if (active) {
+            if (isActive) {
               link.setAttribute("aria-current", "location");
             } else {
               link.removeAttribute("aria-current");
@@ -145,18 +169,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     );
 
-    sections.forEach(section => {
-      sectionObserver.observe(section);
-    });
+    sections.forEach(section => sectionObserver.observe(section));
   }
 
   // ==========================================
-  // 7. ROTATING HERO TAGLINES
+  // 7. ROTATING HERO TAGLINE
   // ==========================================
 
-  const tagline = $("#tagline");
+  const rotatingTag = $("#rotatingTag");
 
-  if (tagline) {
+  if (rotatingTag) {
     const phrases = [
       "Pocket & Feel",
       "Serve The Song",
@@ -164,42 +186,35 @@ document.addEventListener("DOMContentLoaded", () => {
       "Accra's Steady Groove"
     ];
 
-    if (!prefersReducedMotion) {
+    if (reducedMotion) {
+      rotatingTag.textContent = phrases[0];
+    } else {
       let phraseIndex = 0;
-      let characterIndex = 0;
+      let charIndex = 0;
       let deleting = false;
 
-      function typePhrase() {
+      function typeTagline() {
         const phrase = phrases[phraseIndex];
 
-        if (deleting) {
-          characterIndex--;
-        } else {
-          characterIndex++;
-        }
+        charIndex += deleting ? -1 : 1;
 
-        tagline.textContent = phrase.substring(
-          0,
-          characterIndex
-        );
+        rotatingTag.textContent = phrase.substring(0, charIndex);
 
         let delay = deleting ? 45 : 90;
 
-        if (!deleting && characterIndex === phrase.length) {
+        if (!deleting && charIndex === phrase.length) {
           deleting = true;
-          delay = 1800;
-        } else if (deleting && characterIndex === 0) {
+          delay = 1700;
+        } else if (deleting && charIndex === 0) {
           deleting = false;
           phraseIndex = (phraseIndex + 1) % phrases.length;
-          delay = 400;
+          delay = 350;
         }
 
-        window.setTimeout(typePhrase, delay);
+        window.setTimeout(typeTagline, delay);
       }
 
-      typePhrase();
-    } else {
-      tagline.textContent = phrases[0];
+      typeTagline();
     }
   }
 
@@ -207,23 +222,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // 8. FLOATING MUSIC NOTES
   // ==========================================
 
-  const notesWrap = $("#notesWrap");
+  const notesContainer = $("#notes");
 
-  if (notesWrap && !prefersReducedMotion) {
-    const notes = ["♪", "♫", "♬", "♩"];
+  if (notesContainer && !reducedMotion) {
+    const symbols = ["♪", "♫", "♬", "♩"];
 
     for (let i = 0; i < 14; i++) {
       const note = document.createElement("span");
 
-      note.className = "music-note";
+      note.className = "note";
       note.textContent =
-        notes[Math.floor(Math.random() * notes.length)];
+        symbols[Math.floor(Math.random() * symbols.length)];
 
       note.style.left = `${Math.random() * 100}%`;
       note.style.animationDelay = `${Math.random() * 12}s`;
-      note.style.animationDuration = `${10 + Math.random() * 12}s`;
+      note.style.animationDuration =
+        `${10 + Math.random() * 12}s`;
 
-      notesWrap.appendChild(note);
+      notesContainer.appendChild(note);
     }
   }
 
@@ -233,7 +249,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let drumContext = null;
   let drumMaster = null;
-  let drumCompressor = null;
 
   function initDrumAudio() {
     if (drumContext) return drumContext;
@@ -242,24 +257,25 @@ document.addEventListener("DOMContentLoaded", () => {
       window.AudioContext || window.webkitAudioContext;
 
     if (!AudioContextClass) {
-      console.warn("Web Audio is not supported in this browser.");
+      console.warn("This browser does not support Web Audio.");
       return null;
     }
 
     drumContext = new AudioContextClass();
 
+    const compressor = drumContext.createDynamicsCompressor();
     drumMaster = drumContext.createGain();
+
     drumMaster.gain.value = 0.8;
 
-    drumCompressor = drumContext.createDynamicsCompressor();
-    drumCompressor.threshold.value = -18;
-    drumCompressor.knee.value = 20;
-    drumCompressor.ratio.value = 8;
-    drumCompressor.attack.value = 0.003;
-    drumCompressor.release.value = 0.2;
+    compressor.threshold.value = -18;
+    compressor.knee.value = 20;
+    compressor.ratio.value = 8;
+    compressor.attack.value = 0.003;
+    compressor.release.value = 0.2;
 
-    drumMaster.connect(drumCompressor);
-    drumCompressor.connect(drumContext.destination);
+    drumMaster.connect(compressor);
+    compressor.connect(drumContext.destination);
 
     return drumContext;
   }
@@ -267,28 +283,27 @@ document.addEventListener("DOMContentLoaded", () => {
   async function resumeDrumAudio() {
     const context = initDrumAudio();
 
-    if (context && context.state === "suspended") {
+    if (!context) return null;
+
+    if (context.state === "suspended") {
       try {
         await context.resume();
       } catch (error) {
-        console.warn("Could not start drum audio:", error);
+        console.warn("Drum audio could not start:", error);
       }
     }
 
     return context;
   }
 
-  function drumGain(value, duration = 0.1) {
+  function makeDrumGain(volume, duration) {
     const gain = drumContext.createGain();
+    const now = drumContext.currentTime;
 
-    gain.gain.setValueAtTime(
-      Math.max(0.0001, value),
-      drumContext.currentTime
-    );
-
+    gain.gain.setValueAtTime(volume, now);
     gain.gain.exponentialRampToValueAtTime(
       0.0001,
-      drumContext.currentTime + duration
+      now + duration
     );
 
     gain.connect(drumMaster);
@@ -298,9 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function playKick() {
     const now = drumContext.currentTime;
-
     const oscillator = drumContext.createOscillator();
-    const gain = drumGain(1.1, 0.5);
+    const gain = makeDrumGain(1.1, 0.5);
 
     oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(150, now);
@@ -313,35 +327,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function playSnare() {
     const now = drumContext.currentTime;
+    const size = Math.floor(drumContext.sampleRate * 0.22);
 
-    const bufferSize = drumContext.sampleRate * 0.22;
     const buffer = drumContext.createBuffer(
       1,
-      bufferSize,
+      size,
       drumContext.sampleRate
     );
 
     const data = buffer.getChannelData(0);
 
-    for (let i = 0; i < bufferSize; i++) {
+    for (let i = 0; i < size; i++) {
       data[i] = Math.random() * 2 - 1;
     }
 
     const noise = drumContext.createBufferSource();
-    const noiseFilter = drumContext.createBiquadFilter();
-    const noiseGain = drumGain(0.65, 0.2);
+    const filter = drumContext.createBiquadFilter();
+    const noiseGain = makeDrumGain(0.65, 0.2);
 
     noise.buffer = buffer;
-    noiseFilter.type = "highpass";
-    noiseFilter.frequency.value = 1200;
+    filter.type = "highpass";
+    filter.frequency.value = 1200;
 
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-
+    noise.connect(filter);
+    filter.connect(noiseGain);
     noise.start(now);
 
     const oscillator = drumContext.createOscillator();
-    const oscGain = drumGain(0.4, 0.12);
+    const oscGain = makeDrumGain(0.4, 0.12);
 
     oscillator.type = "triangle";
     oscillator.frequency.setValueAtTime(190, now);
@@ -354,40 +367,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function playHiHat() {
     const now = drumContext.currentTime;
+    const size = Math.floor(drumContext.sampleRate * 0.12);
 
-    const bufferSize = drumContext.sampleRate * 0.12;
     const buffer = drumContext.createBuffer(
       1,
-      bufferSize,
+      size,
       drumContext.sampleRate
     );
 
     const data = buffer.getChannelData(0);
 
-    for (let i = 0; i < bufferSize; i++) {
+    for (let i = 0; i < size; i++) {
       data[i] = Math.random() * 2 - 1;
     }
 
     const noise = drumContext.createBufferSource();
     const filter = drumContext.createBiquadFilter();
-    const gain = drumGain(0.28, 0.12);
+    const gain = makeDrumGain(0.28, 0.12);
 
     noise.buffer = buffer;
-
     filter.type = "highpass";
     filter.frequency.value = 7500;
 
     noise.connect(filter);
     filter.connect(gain);
-
     noise.start(now);
   }
 
   function playTom() {
     const now = drumContext.currentTime;
-
     const oscillator = drumContext.createOscillator();
-    const gain = drumGain(0.7, 0.35);
+    const gain = makeDrumGain(0.7, 0.35);
 
     oscillator.type = "sine";
     oscillator.frequency.setValueAtTime(180, now);
@@ -398,30 +408,19 @@ document.addEventListener("DOMContentLoaded", () => {
     oscillator.stop(now + 0.35);
   }
 
-  function playRide() {
-    playCymbal(4500, 0.35, 0.24);
-  }
-
-  function playCrash() {
-    playCymbal(1800, 1.4, 0.65);
-  }
-
   function playCymbal(frequency, duration, volume) {
     const now = drumContext.currentTime;
-
-    const bufferSize = Math.floor(
-      drumContext.sampleRate * duration
-    );
+    const size = Math.floor(drumContext.sampleRate * duration);
 
     const buffer = drumContext.createBuffer(
       1,
-      bufferSize,
+      size,
       drumContext.sampleRate
     );
 
     const data = buffer.getChannelData(0);
 
-    for (let i = 0; i < bufferSize; i++) {
+    for (let i = 0; i < size; i++) {
       data[i] = Math.random() * 2 - 1;
     }
 
@@ -430,7 +429,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const gain = drumContext.createGain();
 
     noise.buffer = buffer;
-
     filter.type = "highpass";
     filter.frequency.value = frequency;
 
@@ -448,31 +446,34 @@ document.addEventListener("DOMContentLoaded", () => {
     noise.stop(now + duration);
   }
 
-  function playClap() {
-    playSnare();
+  function playRide() {
+    playCymbal(4500, 0.35, 0.24);
+  }
+
+  function playCrash() {
+    playCymbal(1800, 1.4, 0.65);
   }
 
   function playCowbell() {
     const now = drumContext.currentTime;
 
-    [540, 800].forEach((frequency, index) => {
+    [540, 800].forEach(frequency => {
       const oscillator = drumContext.createOscillator();
-      const gain = drumGain(0.35, 0.18);
+      const gain = makeDrumGain(0.35, 0.18);
 
       oscillator.type = "square";
       oscillator.frequency.value = frequency;
 
       oscillator.connect(gain);
       oscillator.start(now);
-      oscillator.stop(now + 0.18 + index * 0.01);
+      oscillator.stop(now + 0.18);
     });
   }
 
   function playRimshot() {
     const now = drumContext.currentTime;
-
     const oscillator = drumContext.createOscillator();
-    const gain = drumGain(0.5, 0.07);
+    const gain = makeDrumGain(0.5, 0.08);
 
     oscillator.type = "triangle";
     oscillator.frequency.value = 1600;
@@ -489,46 +490,45 @@ document.addEventListener("DOMContentLoaded", () => {
     tom: playTom,
     ride: playRide,
     crash: playCrash,
-    clap: playClap,
+    clap: playSnare,
     cowbell: playCowbell,
     rimshot: playRimshot
   };
 
-  async function triggerDrum(name, pad) {
-    if (!drumSounds[name]) return;
+  async function triggerDrum(sound, pad) {
+    if (!drumSounds[sound]) return;
 
     const context = await resumeDrumAudio();
-
     if (!context) return;
 
-    drumSounds[name]();
+    drumSounds[sound]();
 
     if (pad) {
       pad.classList.add("playing");
 
       window.setTimeout(() => {
         pad.classList.remove("playing");
-      }, 120);
+      }, 130);
     }
   }
 
-  const drumPads = $$(".drum-pad");
+  const drumPads = $$(".pad");
 
   drumPads.forEach(pad => {
-    const name =
-      pad.dataset.sound ||
-      pad.dataset.drum ||
-      pad.dataset.key;
+    const sound = pad.dataset.sound;
 
-    if (!name || !drumSounds[name]) return;
+    if (!sound || !drumSounds[sound]) {
+      console.warn("Unknown drum sound:", sound);
+      return;
+    }
 
     pad.addEventListener("pointerdown", event => {
       event.preventDefault();
-      triggerDrum(name, pad);
+      triggerDrum(sound, pad);
     });
   });
 
-  const keyboardMap = {
+  const drumKeys = {
     q: "kick",
     w: "snare",
     e: "hihat",
@@ -543,24 +543,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", event => {
     if (
       event.repeat ||
-      event.target.closest("input, textarea, select, button")
-    ) {
-      return;
-    }
+      event.target.closest("input, textarea, select")
+    ) return;
 
-    const key = event.key.toLowerCase();
-    const sound = keyboardMap[key];
-
+    const sound = drumKeys[event.key.toLowerCase()];
     if (!sound) return;
 
-    const pad = drumPads.find(item => {
-      const padName =
-        item.dataset.sound ||
-        item.dataset.drum ||
-        item.dataset.key;
-
-      return padName === sound;
-    });
+    const pad = drumPads.find(
+      item => item.dataset.sound === sound
+    );
 
     triggerDrum(sound, pad);
   });
@@ -572,24 +563,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let worshipContext = null;
   let worshipMaster = null;
   let activeWorshipNodes = [];
+  let activeWorshipPad = null;
 
   let selectedMode = "major";
   let selectedTone = "warm";
-
-  const noteFrequencies = {
-    C: 261.63,
-    "C#": 277.18,
-    D: 293.66,
-    "D#": 311.13,
-    E: 329.63,
-    F: 349.23,
-    "F#": 369.99,
-    G: 392.00,
-    "G#": 415.30,
-    A: 440.00,
-    "A#": 466.16,
-    B: 493.88
-  };
 
   const chordIntervals = {
     major: [0, 4, 7],
@@ -601,28 +578,24 @@ document.addEventListener("DOMContentLoaded", () => {
       type: "triangle",
       volume: 0.17,
       attack: 0.4,
-      release: 1.2,
       detune: 0
     },
     bright: {
       type: "sawtooth",
       volume: 0.10,
       attack: 0.12,
-      release: 0.8,
       detune: 3
     },
     strings: {
       type: "sawtooth",
       volume: 0.11,
       attack: 0.8,
-      release: 1.6,
       detune: 7
     },
     airy: {
       type: "sine",
       volume: 0.18,
       attack: 1.0,
-      release: 2.0,
       detune: 0
     }
   };
@@ -633,14 +606,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const AudioContextClass =
       window.AudioContext || window.webkitAudioContext;
 
-    if (!AudioContextClass) return null;
+    if (!AudioContextClass) {
+      console.warn("Worship pad audio is not supported.");
+      return null;
+    }
 
     worshipContext = new AudioContextClass();
 
+    const compressor = worshipContext.createDynamicsCompressor();
+
     worshipMaster = worshipContext.createGain();
     worshipMaster.gain.value = 0.7;
-
-    const compressor = worshipContext.createDynamicsCompressor();
 
     compressor.threshold.value = -20;
     compressor.knee.value = 18;
@@ -655,11 +631,13 @@ document.addEventListener("DOMContentLoaded", () => {
   async function resumeWorshipAudio() {
     const context = initWorshipAudio();
 
-    if (context && context.state === "suspended") {
+    if (!context) return null;
+
+    if (context.state === "suspended") {
       try {
         await context.resume();
       } catch (error) {
-        console.warn("Could not start worship audio:", error);
+        console.warn("Worship audio could not start:", error);
       }
     }
 
@@ -674,41 +652,43 @@ document.addEventListener("DOMContentLoaded", () => {
     activeWorshipNodes.forEach(node => {
       try {
         node.gain.gain.cancelScheduledValues(now);
-        node.gain.gain.setTargetAtTime(
-          0.0001,
-          now,
-          0.12
-        );
-
+        node.gain.gain.setTargetAtTime(0.0001, now, 0.12);
         node.oscillator.stop(now + 0.6);
       } catch (error) {
-        // Already stopped.
+        // Oscillator may already have stopped.
       }
     });
 
     activeWorshipNodes = [];
 
-    $$(".worship-pad").forEach(pad => {
-      pad.classList.remove("active");
-    });
+    if (activeWorshipPad) {
+      activeWorshipPad.classList.remove("active");
+      activeWorshipPad = null;
+    }
   }
 
-  async function playWorshipNote(note, pad) {
-    const context = await resumeWorshipAudio();
+  async function playWorshipNote(pad) {
+    if (!pad) return;
 
-    if (!context || !noteFrequencies[note]) return;
+    const frequency = Number(pad.dataset.freq);
 
-    if (pad && pad.classList.contains("active")) {
+    if (!Number.isFinite(frequency) || frequency <= 0) {
+      console.warn("Invalid worship pad frequency:", pad.dataset.freq);
+      return;
+    }
+
+    if (activeWorshipPad === pad) {
       stopWorshipPad();
       return;
     }
 
+    const context = await resumeWorshipAudio();
+    if (!context) return;
+
     stopWorshipPad();
 
-    const baseFrequency = noteFrequencies[note];
-    const intervals = chordIntervals[selectedMode];
     const settings = toneSettings[selectedTone];
-
+    const intervals = chordIntervals[selectedMode];
     const now = context.currentTime;
 
     intervals.forEach(interval => {
@@ -717,7 +697,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       oscillator.type = settings.type;
       oscillator.frequency.value =
-        baseFrequency * Math.pow(2, interval / 12);
+        frequency * Math.pow(2, interval / 12);
 
       oscillator.detune.value = settings.detune;
 
@@ -738,50 +718,57 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    if (pad) {
-      pad.classList.add("active");
-    }
+    activeWorshipPad = pad;
+    pad.classList.add("active");
   }
 
-  $$(".worship-pad").forEach(pad => {
-    const note =
-      pad.dataset.note ||
-      pad.dataset.key;
+  const worshipPads = $$(".wpad");
 
-    if (!note) return;
-
+  worshipPads.forEach(pad => {
     pad.addEventListener("click", () => {
-      playWorshipNote(note, pad);
+      playWorshipNote(pad);
     });
   });
 
   // ==========================================
-  // 11. WORSHIP MODE SELECTION
+  // 11. MAJOR / MINOR BUTTONS
   // ==========================================
 
-  const modeButtons = $$("[data-mode]");
+  const majorBtn = $("#majorBtn");
+  const minorBtn = $("#minorBtn");
 
-  modeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const mode = button.dataset.mode;
+  function updateMode(mode) {
+    selectedMode = mode;
 
-      if (!chordIntervals[mode]) return;
+    if (majorBtn) {
+      const active = mode === "major";
+      majorBtn.classList.toggle("active", active);
+      majorBtn.setAttribute("aria-pressed", String(active));
+    }
 
-      selectedMode = mode;
+    if (minorBtn) {
+      const active = mode === "minor";
+      minorBtn.classList.toggle("active", active);
+      minorBtn.setAttribute("aria-pressed", String(active));
+    }
 
-      modeButtons.forEach(item => {
-        item.classList.toggle(
-          "active",
-          item === button
-        );
-      });
+    stopWorshipPad();
+  }
 
-      stopWorshipPad();
+  if (majorBtn) {
+    majorBtn.addEventListener("click", () => {
+      updateMode("major");
     });
-  });
+  }
+
+  if (minorBtn) {
+    minorBtn.addEventListener("click", () => {
+      updateMode("minor");
+    });
+  }
 
   // ==========================================
-  // 12. WORSHIP TONE SELECTION
+  // 12. WORSHIP SOUND PRESETS
   // ==========================================
 
   const toneButtons = $$("[data-tone]");
@@ -795,10 +782,7 @@ document.addEventListener("DOMContentLoaded", () => {
       selectedTone = tone;
 
       toneButtons.forEach(item => {
-        item.classList.toggle(
-          "active",
-          item === button
-        );
+        item.classList.toggle("active", item === button);
       });
 
       stopWorshipPad();
@@ -806,35 +790,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ==========================================
-  // 13. WORSHIP PAD KEYBOARD CONTROLS
-  // ==========================================
-
-  document.addEventListener("keydown", event => {
-    if (
-      event.repeat ||
-      event.target.closest("input, textarea, select, button")
-    ) {
-      return;
-    }
-
-    const key = event.key.toUpperCase();
-
-    if (!noteFrequencies[key]) return;
-
-    const pad = $$(".worship-pad").find(item => {
-      return (
-        item.dataset.note === key ||
-        item.dataset.key === key
-      );
-    });
-
-    if (pad) {
-      playWorshipNote(key, pad);
-    }
-  });
-
-  // ==========================================
-  // 14. CLEAN UP AUDIO WHEN LEAVING
+  // 13. STOP WORSHIP SOUND WHEN TAB IS HIDDEN
   // ==========================================
 
   document.addEventListener("visibilitychange", () => {
@@ -844,13 +800,282 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ==========================================
+  // 14. BOOKING ASSISTANT
+  // ==========================================
+
+  const assistantButton = $("#pj-ai-btn");
+  const assistantBox = $("#pj-ai-box");
+  const assistantClose = $("#pj-ai-close");
+  const assistantMessages = $("#pj-ai-messages");
+  const assistantInput = $("#pj-ai-text");
+  const assistantSend = $("#pj-ai-send");
+
+  let assistantStarted = false;
+  let bookingStep = 0;
+
+  const bookingDetails = {
+    event: "",
+    date: "",
+    location: ""
+  };
+
+  function addAssistantMessage(message, sender = "bot") {
+    if (!assistantMessages) return;
+
+    const bubble = document.createElement("div");
+
+    bubble.className = sender === "user"
+      ? "pj-user-message"
+      : "pj-bot-message";
+
+    // Use textContent to prevent HTML injection.
+    bubble.textContent = message;
+
+    assistantMessages.appendChild(bubble);
+    assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  }
+
+  function openAssistant() {
+    if (!assistantBox || !assistantButton) return;
+
+    assistantBox.classList.add("open");
+    assistantBox.setAttribute("aria-hidden", "false");
+    assistantButton.setAttribute("aria-expanded", "true");
+
+    if (!assistantStarted) {
+      assistantStarted = true;
+
+      addAssistantMessage(
+        "Hello! Welcome to Phil Jazzy's booking assistant. 🥁"
+      );
+
+      addAssistantMessage(
+        "I can help you make a booking enquiry for church programs, weddings, studio recordings and live performances."
+      );
+
+      addAssistantMessage(
+        "What type of event or musical service are you interested in?"
+      );
+    }
+
+    window.setTimeout(() => {
+      assistantInput?.focus();
+    }, 150);
+  }
+
+  function closeAssistant() {
+    if (!assistantBox || !assistantButton) return;
+
+    assistantBox.classList.remove("open");
+    assistantBox.setAttribute("aria-hidden", "true");
+    assistantButton.setAttribute("aria-expanded", "false");
+  }
+
+  if (assistantButton) {
+    assistantButton.addEventListener("click", () => {
+      const isOpen = assistantBox?.classList.contains("open");
+
+      if (isOpen) {
+        closeAssistant();
+      } else {
+        openAssistant();
+      }
+    });
+  }
+
+  if (assistantClose) {
+    assistantClose.addEventListener("click", closeAssistant);
+  }
+
+  function resetBooking() {
+    bookingStep = 0;
+
+    bookingDetails.event = "";
+    bookingDetails.date = "";
+    bookingDetails.location = "";
+
+    addAssistantMessage(
+      "Let's start again. What type of event would you like to book Phil Jazzy for?"
+    );
+  }
+
+  function createBookingLink() {
+    const message = [
+      "Hi Phil Jazzy! I would like to make a booking enquiry.",
+      "",
+      `Event: ${bookingDetails.event}`,
+      `Date: ${bookingDetails.date}`,
+      `Location: ${bookingDetails.location}`,
+      "",
+      "Please let me know your availability and quotation."
+    ].join("\n");
+
+    const link = document.createElement("a");
+
+    link.href =
+      "https://wa.me/233206834470?text=" +
+      encodeURIComponent(message);
+
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Continue on WhatsApp ↗";
+    link.className = "assistant-whatsapp-link";
+
+    assistantMessages.appendChild(link);
+    assistantMessages.scrollTop = assistantMessages.scrollHeight;
+  }
+
+  function processAssistantMessage(rawMessage) {
+    const message = rawMessage.trim();
+
+    if (!message) return;
+
+    addAssistantMessage(message, "user");
+
+    const lower = message.toLowerCase();
+
+    if (
+      ["restart", "start over", "start again"].includes(lower)
+    ) {
+      resetBooking();
+      return;
+    }
+
+    if (bookingStep === 0) {
+      if (
+        lower.includes("price") ||
+        lower.includes("cost") ||
+        lower.includes("how much") ||
+        lower.includes("rate")
+      ) {
+        addAssistantMessage(
+          "Booking rates depend on the type of event, location and requirements. Please share your event details so Phil can provide a quotation."
+        );
+
+        addAssistantMessage(
+          "What type of event are you planning?"
+        );
+
+        return;
+      }
+
+      if (
+        lower.includes("available") ||
+        lower.includes("availability") ||
+        lower.includes("free")
+      ) {
+        addAssistantMessage(
+          "I can collect your booking details, but I cannot check a live calendar. Phil will personally confirm availability."
+        );
+
+        addAssistantMessage(
+          "What type of event would you like to book?"
+        );
+
+        return;
+      }
+
+      bookingDetails.event = message;
+      bookingStep = 1;
+
+      addAssistantMessage(
+        "Great! What date are you planning for the event?"
+      );
+
+      return;
+    }
+
+    if (bookingStep === 1) {
+      bookingDetails.date = message;
+      bookingStep = 2;
+
+      addAssistantMessage(
+        "Thank you! Where will the event take place? Please provide the venue or town."
+      );
+
+      return;
+    }
+
+    if (bookingStep === 2) {
+      bookingDetails.location = message;
+      bookingStep = 3;
+
+      addAssistantMessage(
+        "Excellent! Here is a summary of your enquiry:"
+      );
+
+      addAssistantMessage(
+        `Event: ${bookingDetails.event}\nDate: ${bookingDetails.date}\nLocation: ${bookingDetails.location}`
+      );
+
+      addAssistantMessage(
+        "You can now send these details directly to Phil Jazzy on WhatsApp. He will confirm availability and provide a quotation."
+      );
+
+      createBookingLink();
+
+      addAssistantMessage(
+        "To make another enquiry, type RESTART."
+      );
+
+      return;
+    }
+
+    if (bookingStep === 3) {
+      addAssistantMessage(
+        "Your enquiry is ready. Use the WhatsApp link above to contact Phil. Type RESTART if you want to make another booking enquiry."
+      );
+    }
+  }
+
+  function sendAssistantMessage() {
+    if (!assistantInput) return;
+
+    const message = assistantInput.value.trim();
+
+    if (!message) return;
+
+    assistantInput.value = "";
+    processAssistantMessage(message);
+  }
+
+  if (assistantSend) {
+    assistantSend.addEventListener("click", sendAssistantMessage);
+  }
+
+  if (assistantInput) {
+    assistantInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendAssistantMessage();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", event => {
+    if (
+      event.key === "Escape" &&
+      assistantBox?.classList.contains("open")
+    ) {
+      closeAssistant();
+    }
+  });
+
+  // ==========================================
   // 15. FOOTER YEAR
   // ==========================================
 
-  const yearElement = $("#year");
+  const year = $("#year");
 
-  if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
+  if (year) {
+    year.textContent = new Date().getFullYear();
   }
+
+  // ==========================================
+  // 16. INITIAL STATUS
+  // ==========================================
+
+  console.log("Phil Jazzy website initialized successfully.");
+  console.log("Navigation, instruments and booking assistant loaded.");
 
 });
