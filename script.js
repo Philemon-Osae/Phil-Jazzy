@@ -1,370 +1,856 @@
-document.addEventListener("DOMContentLoaded", function(){
 
-  const bookBtn = document.getElementById("bookBtn");
-  if(bookBtn){
-    bookBtn.addEventListener("click", function(){
-      window.open("https://wa.me/233206834470?text=Hi%20Phil%20Jazzy%20-%20I'm%20from%20your%20website%20and%20want%20to%20book%20you%20for%20my%20program%20in%20Accra","_blank");
+document.addEventListener("DOMContentLoaded", () => {
+  "use strict";
+
+  // ==========================================
+  // 1. GENERAL HELPERS
+  // ==========================================
+
+  const $ = (selector, parent = document) =>
+    parent.querySelector(selector);
+
+  const $$ = (selector, parent = document) =>
+    [...parent.querySelectorAll(selector)];
+
+  const prefersReducedMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ==========================================
+  // 2. WHATSAPP BOOKING
+  // ==========================================
+
+  const bookBtn = $("#bookBtn");
+
+  if (bookBtn) {
+    bookBtn.addEventListener("click", () => {
+      const message = encodeURIComponent(
+        "Hi Phil Jazzy! I'm interested in booking you for an event. Please let me know your availability and booking details."
+      );
+
+      window.open(
+        `https://wa.me/233206834470?text=${message}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
     });
   }
 
-  const cards = document.querySelectorAll(".card");
-  const revealObs = new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add("visible"); });
-  }, {threshold:0.15});
-  cards.forEach(c=> revealObs.observe(c));
+  // ==========================================
+  // 3. SCROLL PROGRESS
+  // ==========================================
 
-  const progress = document.getElementById("progress");
-  const toTop = document.getElementById("toTop");
-  const navLinks = document.querySelectorAll("nav a");
-  const sections = ["home","about","services","drumkit","worship","contact"].map(id=>document.getElementById(id));
+  const progress = $("#progress");
 
-  window.addEventListener("scroll", function(){
-    const h = document.documentElement;
-    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
-    progress.style.width = scrolled + "%";
-    toTop.classList.toggle("show", h.scrollTop > 400);
+  function updateProgress() {
+    if (!progress) return;
 
-    let current = sections[0].id;
-    sections.forEach(sec=>{
-      if(sec.getBoundingClientRect().top <= 100) current = sec.id;
-    });
-    navLinks.forEach(a=> a.classList.toggle("active", a.getAttribute("href") === "#"+current));
+    const scrollable =
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    const percentage =
+      scrollable > 0
+        ? (window.scrollY / scrollable) * 100
+        : 0;
+
+    progress.style.width = `${percentage}%`;
+  }
+
+  window.addEventListener("scroll", updateProgress, {
+    passive: true
   });
-  toTop.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
 
-  const phrases = ["Pocket & Feel", "Serve The Song", "Code by Day, Drum by Night", "Accra's Steady Groove"];
-  const tagEl = document.getElementById("rotatingTag");
-  let pi = 0, ci = 0, deleting = false;
-  function typeLoop(){
-    const word = phrases[pi];
-    ci += deleting ? -1 : 1;
-    tagEl.textContent = word.slice(0, ci);
-    let delay = deleting ? 40 : 90;
-    if(!deleting && ci === word.length){ delay = 1400; deleting = true; }
-    else if(deleting && ci === 0){ deleting = false; pi = (pi+1) % phrases.length; delay = 300; }
-    setTimeout(typeLoop, delay);
-  }
-  typeLoop();
+  updateProgress();
 
-  const notesWrap = document.getElementById("notes");
-  const symbols = ["♪","♫","♬","♩"];
-  for(let i=0;i<14;i++){
-    const n = document.createElement("div");
-    n.className = "note";
-    n.textContent = symbols[Math.floor(Math.random()*symbols.length)];
-    n.style.left = Math.random()*100 + "%";
-    n.style.fontSize = (14 + Math.random()*20) + "px";
-    n.style.animationDuration = (6 + Math.random()*8) + "s";
-    n.style.animationDelay = (Math.random()*8) + "s";
-    notesWrap.appendChild(n);
+  // ==========================================
+  // 4. BACK TO TOP
+  // ==========================================
+
+  const toTop = $("#toTop");
+
+  if (toTop) {
+    window.addEventListener("scroll", () => {
+      toTop.classList.toggle(
+        "show",
+        window.scrollY > 400
+      );
+    }, { passive: true });
+
+    toTop.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? "instant" : "smooth"
+      });
+    });
   }
 
-  const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  let actx = null, master = null, compressor = null;
-  function ctx(){
-    if(!actx){
-      actx = new AudioCtx();
-      compressor = actx.createDynamicsCompressor();
-      compressor.threshold.value = -12;
-      compressor.knee.value = 12;
-      compressor.ratio.value = 4;
-      compressor.attack.value = 0.002;
-      compressor.release.value = 0.15;
-      master = actx.createGain();
-      master.gain.value = 3.6;
-      compressor.threshold.value = -18;
-      compressor.ratio.value = 6;
-      compressor.connect(master).connect(actx.destination);
+  // ==========================================
+  // 5. SCROLL REVEAL ANIMATIONS
+  // ==========================================
+
+  const revealElements = $$(".card, .reveal");
+
+  if ("IntersectionObserver" in window && !prefersReducedMotion) {
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    revealElements.forEach(element => {
+      revealObserver.observe(element);
+    });
+  } else {
+    revealElements.forEach(element => {
+      element.classList.add("visible");
+    });
+  }
+
+  // ==========================================
+  // 6. ACTIVE NAVIGATION
+  // ==========================================
+
+  const navLinks = $$(".nav a[href^='#']");
+  const sections = navLinks
+    .map(link => $(link.getAttribute("href")))
+    .filter(Boolean);
+
+  if ("IntersectionObserver" in window && sections.length) {
+    const sectionObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+
+          navLinks.forEach(link => {
+            const active =
+              link.getAttribute("href") === `#${entry.target.id}`;
+
+            link.classList.toggle("active", active);
+
+            if (active) {
+              link.setAttribute("aria-current", "location");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
+        });
+      },
+      {
+        rootMargin: "-30% 0px -60% 0px"
+      }
+    );
+
+    sections.forEach(section => {
+      sectionObserver.observe(section);
+    });
+  }
+
+  // ==========================================
+  // 7. ROTATING HERO TAGLINES
+  // ==========================================
+
+  const tagline = $("#tagline");
+
+  if (tagline) {
+    const phrases = [
+      "Pocket & Feel",
+      "Serve The Song",
+      "Code by Day, Drum by Night",
+      "Accra's Steady Groove"
+    ];
+
+    if (!prefersReducedMotion) {
+      let phraseIndex = 0;
+      let characterIndex = 0;
+      let deleting = false;
+
+      function typePhrase() {
+        const phrase = phrases[phraseIndex];
+
+        if (deleting) {
+          characterIndex--;
+        } else {
+          characterIndex++;
+        }
+
+        tagline.textContent = phrase.substring(
+          0,
+          characterIndex
+        );
+
+        let delay = deleting ? 45 : 90;
+
+        if (!deleting && characterIndex === phrase.length) {
+          deleting = true;
+          delay = 1800;
+        } else if (deleting && characterIndex === 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+          delay = 400;
+        }
+
+        window.setTimeout(typePhrase, delay);
+      }
+
+      typePhrase();
+    } else {
+      tagline.textContent = phrases[0];
     }
-    return actx;
-  }
-  function out(){ return compressor; }
-
-  function kick(){
-    const c = ctx(), t = c.currentTime;
-    const osc = c.createOscillator(), gain = c.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(150, t);
-    osc.frequency.exponentialRampToValueAtTime(40, t+0.35);
-    gain.gain.setValueAtTime(2.6, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t+0.4);
-    osc.connect(gain).connect(out());
-    osc.start(t); osc.stop(t+0.4);
-  }
-  function noiseBurst({decay=0.15, filterType="highpass", freq=1000, gainVal=0.7}={}){
-    const c = ctx(), t = c.currentTime;
-    const bufferSize = c.sampleRate * decay;
-    const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (1 - i/bufferSize);
-    const noise = c.createBufferSource();
-    noise.buffer = buffer;
-    const filter = c.createBiquadFilter();
-    filter.type = filterType; filter.frequency.value = freq;
-    const gain = c.createGain();
-    gain.gain.setValueAtTime(gainVal, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t+decay);
-    noise.connect(filter).connect(gain).connect(out());
-    noise.start(t);
-  }
-  function snare(){
-    noiseBurst({decay:0.18, filterType:"highpass", freq:900, gainVal:2.4});
-    const c = ctx(), t = c.currentTime;
-    const osc = c.createOscillator(), gain = c.createGain();
-    osc.type = "triangle"; osc.frequency.setValueAtTime(180, t);
-    gain.gain.setValueAtTime(1.3, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.12);
-    osc.connect(gain).connect(out()); osc.start(t); osc.stop(t+0.12);
-  }
-  function hihat(){ noiseBurst({decay:0.06, filterType:"highpass", freq:7000, gainVal:1.4}); }
-  function ride(){ noiseBurst({decay:0.5, filterType:"highpass", freq:5000, gainVal:1.0}); }
-  function crash(){ noiseBurst({decay:1.1, filterType:"highpass", freq:4000, gainVal:1.4}); }
-  function tom(){
-    const c = ctx(), t = c.currentTime;
-    const osc = c.createOscillator(), gain = c.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(220, t);
-    osc.frequency.exponentialRampToValueAtTime(90, t+0.3);
-    gain.gain.setValueAtTime(2.4, t); gain.gain.exponentialRampToValueAtTime(0.001, t+0.35);
-    osc.connect(gain).connect(out()); osc.start(t); osc.stop(t+0.35);
-  }
-  const sounds = {kick, snare, hihat, tom, ride, crash, clap, cowbell, rimshot};
-
-  function clap(){
-    // three quick layered noise bursts to emulate a hand clap
-    [0, 0.02, 0.04].forEach(delay=>{
-      const c = ctx(), t = c.currentTime + delay;
-      const bufferSize = c.sampleRate * 0.12;
-      const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
-      const data = buffer.getChannelData(0);
-      for(let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (1 - i/bufferSize);
-      const noise = c.createBufferSource();
-      noise.buffer = buffer;
-      const filter = c.createBiquadFilter();
-      filter.type = "bandpass"; filter.frequency.value = 1200; filter.Q.value = 1.5;
-      const gain = c.createGain();
-      gain.gain.setValueAtTime(1.4, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t+0.12);
-      noise.connect(filter).connect(gain).connect(out());
-      noise.start(t);
-    });
   }
 
-  function cowbell(){
-    const c = ctx(), t = c.currentTime;
-    [540, 800].forEach(freq=>{
-      const osc = c.createOscillator();
-      osc.type = "square";
-      osc.frequency.value = freq;
-      const gain = c.createGain();
-      gain.gain.setValueAtTime(1.2, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t+0.3);
-      osc.connect(gain).connect(out());
-      osc.start(t); osc.stop(t+0.3);
-    });
+  // ==========================================
+  // 8. FLOATING MUSIC NOTES
+  // ==========================================
+
+  const notesWrap = $("#notesWrap");
+
+  if (notesWrap && !prefersReducedMotion) {
+    const notes = ["♪", "♫", "♬", "♩"];
+
+    for (let i = 0; i < 14; i++) {
+      const note = document.createElement("span");
+
+      note.className = "music-note";
+      note.textContent =
+        notes[Math.floor(Math.random() * notes.length)];
+
+      note.style.left = `${Math.random() * 100}%`;
+      note.style.animationDelay = `${Math.random() * 12}s`;
+      note.style.animationDuration = `${10 + Math.random() * 12}s`;
+
+      notesWrap.appendChild(note);
+    }
   }
 
-  function rimshot(){
-    const c = ctx(), t = c.currentTime;
-    const osc = c.createOscillator();
-    osc.type = "square"; osc.frequency.value = 420;
-    const oGain = c.createGain();
-    oGain.gain.setValueAtTime(1.4, t);
-    oGain.gain.exponentialRampToValueAtTime(0.001, t+0.06);
-    osc.connect(oGain).connect(out());
-    osc.start(t); osc.stop(t+0.06);
-    noiseBurst({decay:0.05, filterType:"highpass", freq:3000, gainVal:1.0});
+  // ==========================================
+  // 9. DRUM KIT AUDIO ENGINE
+  // ==========================================
+
+  let drumContext = null;
+  let drumMaster = null;
+  let drumCompressor = null;
+
+  function initDrumAudio() {
+    if (drumContext) return drumContext;
+
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+      console.warn("Web Audio is not supported in this browser.");
+      return null;
+    }
+
+    drumContext = new AudioContextClass();
+
+    drumMaster = drumContext.createGain();
+    drumMaster.gain.value = 0.8;
+
+    drumCompressor = drumContext.createDynamicsCompressor();
+    drumCompressor.threshold.value = -18;
+    drumCompressor.knee.value = 20;
+    drumCompressor.ratio.value = 8;
+    drumCompressor.attack.value = 0.003;
+    drumCompressor.release.value = 0.2;
+
+    drumMaster.connect(drumCompressor);
+    drumCompressor.connect(drumContext.destination);
+
+    return drumContext;
   }
 
-  const pads = document.querySelectorAll(".pad");
-  function hitPad(pad){
-    const s = pad.getAttribute("data-sound");
-    if(sounds[s]) sounds[s]();
-    pad.classList.add("hit");
-    setTimeout(()=> pad.classList.remove("hit"), 120);
-  }
-  pads.forEach(pad=>{
-    pad.addEventListener("pointerdown", ()=> hitPad(pad));
-  });
-  document.addEventListener("keydown", (e)=>{
-    if(e.repeat) return;
-    const key = e.key.toLowerCase();
-    const pad = document.querySelector('.pad[data-key="'+key+'"]');
-    if(pad) hitPad(pad);
-  });
+  async function resumeDrumAudio() {
+    const context = initDrumAudio();
 
-  /* worship pad synth — separate audio graph from the drum kit above, sustains until tapped again */
-  let wActx = null, wReverb = null, wDryGain = null, wWetGain = null, wLimiter = null;
-  let chordMode = "major";
-  let currentTone = "warm";
-
-  const tonePresets = {
-    warm:    { oscTypes:["sine","triangle"], filterStart:350,  filterEnd:1700, filterQ:0.4, attack:1.4, release:2.0, lfoRate:0.10, lfoDepth:2.5, shimmer:0.08, wet:0.55 },
-    bright:  { oscTypes:["triangle","sawtooth"], filterStart:600, filterEnd:3200, filterQ:0.6, attack:1.0, release:1.6, lfoRate:0.15, lfoDepth:3.5, shimmer:0.14, wet:0.45 },
-    strings: { oscTypes:["sawtooth","triangle"], filterStart:400, filterEnd:1900, filterQ:0.5, attack:1.8, release:2.4, lfoRate:0.08, lfoDepth:2.5, shimmer:0.06, wet:0.5 },
-    airy:    { oscTypes:["sine","sine"], filterStart:800, filterEnd:2600, filterQ:0.3, attack:2.2, release:2.8, lfoRate:0.06, lfoDepth:2.0, shimmer:0.22, wet:0.75 },
-  };
-
-  function buildReverb(c){
-    const duration = 3.2, rate = c.sampleRate;
-    const len = rate * duration;
-    const buf = c.createBuffer(2, len, rate);
-    for(let ch=0; ch<2; ch++){
-      const data = buf.getChannelData(ch);
-      for(let i=0;i<len;i++){
-        data[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.4);
+    if (context && context.state === "suspended") {
+      try {
+        await context.resume();
+      } catch (error) {
+        console.warn("Could not start drum audio:", error);
       }
     }
-    const conv = c.createConvolver();
-    conv.buffer = buf;
-    return conv;
+
+    return context;
   }
 
-  function wCtx(){
-    if(!wActx){
-      wActx = new AudioCtx();
-      wReverb = buildReverb(wActx);
-      wLimiter = wActx.createDynamicsCompressor();
-      wLimiter.threshold.value = -6;
-      wLimiter.knee.value = 6;
-      wLimiter.ratio.value = 12;
-      wLimiter.attack.value = 0.003;
-      wLimiter.release.value = 0.25;
-      wLimiter.connect(wActx.destination);
-      wDryGain = wActx.createGain(); wDryGain.gain.value = 0.5;
-      wWetGain = wActx.createGain(); wWetGain.gain.value = 0.55;
-      wDryGain.connect(wLimiter);
-      wReverb.connect(wWetGain).connect(wLimiter);
+  function drumGain(value, duration = 0.1) {
+    const gain = drumContext.createGain();
+
+    gain.gain.setValueAtTime(
+      Math.max(0.0001, value),
+      drumContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      drumContext.currentTime + duration
+    );
+
+    gain.connect(drumMaster);
+
+    return gain;
+  }
+
+  function playKick() {
+    const now = drumContext.currentTime;
+
+    const oscillator = drumContext.createOscillator();
+    const gain = drumGain(1.1, 0.5);
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(150, now);
+    oscillator.frequency.exponentialRampToValueAtTime(38, now + 0.45);
+
+    oscillator.connect(gain);
+    oscillator.start(now);
+    oscillator.stop(now + 0.5);
+  }
+
+  function playSnare() {
+    const now = drumContext.currentTime;
+
+    const bufferSize = drumContext.sampleRate * 0.22;
+    const buffer = drumContext.createBuffer(
+      1,
+      bufferSize,
+      drumContext.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
     }
-    return wActx;
+
+    const noise = drumContext.createBufferSource();
+    const noiseFilter = drumContext.createBiquadFilter();
+    const noiseGain = drumGain(0.65, 0.2);
+
+    noise.buffer = buffer;
+    noiseFilter.type = "highpass";
+    noiseFilter.frequency.value = 1200;
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+
+    noise.start(now);
+
+    const oscillator = drumContext.createOscillator();
+    const oscGain = drumGain(0.4, 0.12);
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(190, now);
+    oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+
+    oscillator.connect(oscGain);
+    oscillator.start(now);
+    oscillator.stop(now + 0.13);
   }
 
-  function chordFreqs(root, mode){
-    const thirdInterval = mode === "minor" ? Math.pow(2, 3/12) : Math.pow(2, 4/12);
-    const fifthInterval = Math.pow(2, 7/12);
-    return [root, root * thirdInterval, root * fifthInterval];
+  function playHiHat() {
+    const now = drumContext.currentTime;
+
+    const bufferSize = drumContext.sampleRate * 0.12;
+    const buffer = drumContext.createBuffer(
+      1,
+      bufferSize,
+      drumContext.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = drumContext.createBufferSource();
+    const filter = drumContext.createBiquadFilter();
+    const gain = drumGain(0.28, 0.12);
+
+    noise.buffer = buffer;
+
+    filter.type = "highpass";
+    filter.frequency.value = 7500;
+
+    noise.connect(filter);
+    filter.connect(gain);
+
+    noise.start(now);
   }
 
-  const activeWorshipPads = {};
+  function playTom() {
+    const now = drumContext.currentTime;
 
-  function startWorshipPad(padEl, rootFreq){
-    const c = wCtx(), t = c.currentTime;
-    const preset = tonePresets[currentTone];
-    wWetGain.gain.value = preset.wet;
+    const oscillator = drumContext.createOscillator();
+    const gain = drumGain(0.7, 0.35);
 
-    const master = c.createGain();
-    master.gain.setValueAtTime(0, t);
-    master.gain.linearRampToValueAtTime(0.24, t + preset.attack);
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(180, now);
+    oscillator.frequency.exponentialRampToValueAtTime(65, now + 0.3);
 
-    const filter = c.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(preset.filterStart, t);
-    filter.frequency.linearRampToValueAtTime(preset.filterEnd, t + preset.attack);
-    filter.Q.value = preset.filterQ;
+    oscillator.connect(gain);
+    oscillator.start(now);
+    oscillator.stop(now + 0.35);
+  }
 
-    master.connect(filter);
-    filter.connect(wDryGain);
-    filter.connect(wReverb);
+  function playRide() {
+    playCymbal(4500, 0.35, 0.24);
+  }
 
-    const lfo = c.createOscillator();
-    lfo.frequency.value = preset.lfoRate;
-    const lfoGain = c.createGain();
-    lfoGain.gain.value = preset.lfoDepth;
-    lfo.connect(lfoGain);
-    lfo.start(t);
+  function playCrash() {
+    playCymbal(1800, 1.4, 0.65);
+  }
 
-    const oscillators = [];
-    const freqs = chordFreqs(rootFreq, chordMode);
-    freqs.forEach((freq, voiceIdx)=>{
-      [ -2, 2 ].forEach((detuneCents, i)=>{
-        const osc = c.createOscillator();
-        osc.type = preset.oscTypes[i];
-        osc.frequency.value = freq;
-        osc.detune.value = detuneCents;
-        lfoGain.connect(osc.detune);
-        const g = c.createGain();
-        g.gain.value = voiceIdx === 0 ? 0.4 : 0.34;
-        osc.connect(g).connect(master);
-        osc.start(t);
-        oscillators.push(osc);
+  function playCymbal(frequency, duration, volume) {
+    const now = drumContext.currentTime;
+
+    const bufferSize = Math.floor(
+      drumContext.sampleRate * duration
+    );
+
+    const buffer = drumContext.createBuffer(
+      1,
+      bufferSize,
+      drumContext.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = drumContext.createBufferSource();
+    const filter = drumContext.createBiquadFilter();
+    const gain = drumContext.createGain();
+
+    noise.buffer = buffer;
+
+    filter.type = "highpass";
+    filter.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + duration
+    );
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(drumMaster);
+
+    noise.start(now);
+    noise.stop(now + duration);
+  }
+
+  function playClap() {
+    playSnare();
+  }
+
+  function playCowbell() {
+    const now = drumContext.currentTime;
+
+    [540, 800].forEach((frequency, index) => {
+      const oscillator = drumContext.createOscillator();
+      const gain = drumGain(0.35, 0.18);
+
+      oscillator.type = "square";
+      oscillator.frequency.value = frequency;
+
+      oscillator.connect(gain);
+      oscillator.start(now);
+      oscillator.stop(now + 0.18 + index * 0.01);
+    });
+  }
+
+  function playRimshot() {
+    const now = drumContext.currentTime;
+
+    const oscillator = drumContext.createOscillator();
+    const gain = drumGain(0.5, 0.07);
+
+    oscillator.type = "triangle";
+    oscillator.frequency.value = 1600;
+
+    oscillator.connect(gain);
+    oscillator.start(now);
+    oscillator.stop(now + 0.08);
+  }
+
+  const drumSounds = {
+    kick: playKick,
+    snare: playSnare,
+    hihat: playHiHat,
+    tom: playTom,
+    ride: playRide,
+    crash: playCrash,
+    clap: playClap,
+    cowbell: playCowbell,
+    rimshot: playRimshot
+  };
+
+  async function triggerDrum(name, pad) {
+    if (!drumSounds[name]) return;
+
+    const context = await resumeDrumAudio();
+
+    if (!context) return;
+
+    drumSounds[name]();
+
+    if (pad) {
+      pad.classList.add("playing");
+
+      window.setTimeout(() => {
+        pad.classList.remove("playing");
+      }, 120);
+    }
+  }
+
+  const drumPads = $$(".drum-pad");
+
+  drumPads.forEach(pad => {
+    const name =
+      pad.dataset.sound ||
+      pad.dataset.drum ||
+      pad.dataset.key;
+
+    if (!name || !drumSounds[name]) return;
+
+    pad.addEventListener("pointerdown", event => {
+      event.preventDefault();
+      triggerDrum(name, pad);
+    });
+  });
+
+  const keyboardMap = {
+    q: "kick",
+    w: "snare",
+    e: "hihat",
+    a: "tom",
+    s: "ride",
+    d: "crash",
+    z: "clap",
+    x: "cowbell",
+    c: "rimshot"
+  };
+
+  document.addEventListener("keydown", event => {
+    if (
+      event.repeat ||
+      event.target.closest("input, textarea, select, button")
+    ) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    const sound = keyboardMap[key];
+
+    if (!sound) return;
+
+    const pad = drumPads.find(item => {
+      const padName =
+        item.dataset.sound ||
+        item.dataset.drum ||
+        item.dataset.key;
+
+      return padName === sound;
+    });
+
+    triggerDrum(sound, pad);
+  });
+
+  // ==========================================
+  // 10. WORSHIP PAD AUDIO ENGINE
+  // ==========================================
+
+  let worshipContext = null;
+  let worshipMaster = null;
+  let activeWorshipNodes = [];
+
+  let selectedMode = "major";
+  let selectedTone = "warm";
+
+  const noteFrequencies = {
+    C: 261.63,
+    "C#": 277.18,
+    D: 293.66,
+    "D#": 311.13,
+    E: 329.63,
+    F: 349.23,
+    "F#": 369.99,
+    G: 392.00,
+    "G#": 415.30,
+    A: 440.00,
+    "A#": 466.16,
+    B: 493.88
+  };
+
+  const chordIntervals = {
+    major: [0, 4, 7],
+    minor: [0, 3, 7]
+  };
+
+  const toneSettings = {
+    warm: {
+      type: "triangle",
+      volume: 0.17,
+      attack: 0.4,
+      release: 1.2,
+      detune: 0
+    },
+    bright: {
+      type: "sawtooth",
+      volume: 0.10,
+      attack: 0.12,
+      release: 0.8,
+      detune: 3
+    },
+    strings: {
+      type: "sawtooth",
+      volume: 0.11,
+      attack: 0.8,
+      release: 1.6,
+      detune: 7
+    },
+    airy: {
+      type: "sine",
+      volume: 0.18,
+      attack: 1.0,
+      release: 2.0,
+      detune: 0
+    }
+  };
+
+  function initWorshipAudio() {
+    if (worshipContext) return worshipContext;
+
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) return null;
+
+    worshipContext = new AudioContextClass();
+
+    worshipMaster = worshipContext.createGain();
+    worshipMaster.gain.value = 0.7;
+
+    const compressor = worshipContext.createDynamicsCompressor();
+
+    compressor.threshold.value = -20;
+    compressor.knee.value = 18;
+    compressor.ratio.value = 6;
+
+    worshipMaster.connect(compressor);
+    compressor.connect(worshipContext.destination);
+
+    return worshipContext;
+  }
+
+  async function resumeWorshipAudio() {
+    const context = initWorshipAudio();
+
+    if (context && context.state === "suspended") {
+      try {
+        await context.resume();
+      } catch (error) {
+        console.warn("Could not start worship audio:", error);
+      }
+    }
+
+    return context;
+  }
+
+  function stopWorshipPad() {
+    if (!worshipContext) return;
+
+    const now = worshipContext.currentTime;
+
+    activeWorshipNodes.forEach(node => {
+      try {
+        node.gain.gain.cancelScheduledValues(now);
+        node.gain.gain.setTargetAtTime(
+          0.0001,
+          now,
+          0.12
+        );
+
+        node.oscillator.stop(now + 0.6);
+      } catch (error) {
+        // Already stopped.
+      }
+    });
+
+    activeWorshipNodes = [];
+
+    $$(".worship-pad").forEach(pad => {
+      pad.classList.remove("active");
+    });
+  }
+
+  async function playWorshipNote(note, pad) {
+    const context = await resumeWorshipAudio();
+
+    if (!context || !noteFrequencies[note]) return;
+
+    if (pad && pad.classList.contains("active")) {
+      stopWorshipPad();
+      return;
+    }
+
+    stopWorshipPad();
+
+    const baseFrequency = noteFrequencies[note];
+    const intervals = chordIntervals[selectedMode];
+    const settings = toneSettings[selectedTone];
+
+    const now = context.currentTime;
+
+    intervals.forEach(interval => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+
+      oscillator.type = settings.type;
+      oscillator.frequency.value =
+        baseFrequency * Math.pow(2, interval / 12);
+
+      oscillator.detune.value = settings.detune;
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(
+        settings.volume,
+        now + settings.attack
+      );
+
+      oscillator.connect(gain);
+      gain.connect(worshipMaster);
+
+      oscillator.start(now);
+
+      activeWorshipNodes.push({
+        oscillator,
+        gain
       });
     });
 
-    // faint octave-up shimmer on the root only, amount varies per tone preset
-    const shimmer = c.createOscillator();
-    shimmer.type = "sine";
-    shimmer.frequency.value = rootFreq * 2;
-    const shimmerGain = c.createGain();
-    shimmerGain.gain.value = preset.shimmer;
-    shimmer.connect(shimmerGain).connect(master);
-    shimmer.start(t);
-    oscillators.push(shimmer);
-
-    activeWorshipPads[padEl.dataset.padId] = { master, oscillators, lfo, release: preset.release };
-    padEl.classList.add("playing");
+    if (pad) {
+      pad.classList.add("active");
+    }
   }
 
-  function stopWorshipPad(padEl){
-    const active = activeWorshipPads[padEl.dataset.padId];
-    if(!active) return;
-    const c = wCtx(), t = c.currentTime;
-    active.master.gain.cancelScheduledValues(t);
-    active.master.gain.setValueAtTime(active.master.gain.value, t);
-    active.master.gain.linearRampToValueAtTime(0, t + active.release);
-    active.oscillators.forEach(osc=> osc.stop(t + active.release + 0.1));
-    active.lfo.stop(t + active.release + 0.1);
-    delete activeWorshipPads[padEl.dataset.padId];
-    padEl.classList.remove("playing");
-  }
+  $$(".worship-pad").forEach(pad => {
+    const note =
+      pad.dataset.note ||
+      pad.dataset.key;
 
-  function stopAllWorshipPads(){
-    Object.keys(activeWorshipPads).forEach(id=>{
-      const pad = document.querySelector('[data-pad-id="'+id+'"]');
-      if(pad) stopWorshipPad(pad);
-    });
-  }
+    if (!note) return;
 
-  document.querySelectorAll(".wpad").forEach((pad, i)=>{
-    pad.dataset.padId = "wpad" + i;
-    pad.addEventListener("pointerdown", (e)=>{
-      e.preventDefault();
-      const freq = Number(pad.getAttribute("data-freq"));
-      if(activeWorshipPads[pad.dataset.padId]){
-        stopWorshipPad(pad);
-        return;
-      }
-      stopAllWorshipPads();
-      startWorshipPad(pad, freq);
+    pad.addEventListener("click", () => {
+      playWorshipNote(note, pad);
     });
   });
 
-  const majorBtn = document.getElementById("majorBtn");
-  const minorBtn = document.getElementById("minorBtn");
-  if(majorBtn && minorBtn){
-    majorBtn.addEventListener("click", ()=>{
-      if(chordMode === "major") return;
-      chordMode = "major";
-      majorBtn.classList.add("active");
-      minorBtn.classList.remove("active");
-      stopAllWorshipPads();
-    });
-    minorBtn.addEventListener("click", ()=>{
-      if(chordMode === "minor") return;
-      chordMode = "minor";
-      minorBtn.classList.add("active");
-      majorBtn.classList.remove("active");
-      stopAllWorshipPads();
-    });
-  }
+  // ==========================================
+  // 11. WORSHIP MODE SELECTION
+  // ==========================================
 
-  const toneButtons = document.querySelectorAll(".tone-btn");
-  toneButtons.forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      const tone = btn.getAttribute("data-tone");
-      if(currentTone === tone) return;
-      currentTone = tone;
-      toneButtons.forEach(b=> b.classList.remove("active"));
-      btn.classList.add("active");
-      stopAllWorshipPads();
+  const modeButtons = $$("[data-mode]");
+
+  modeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const mode = button.dataset.mode;
+
+      if (!chordIntervals[mode]) return;
+
+      selectedMode = mode;
+
+      modeButtons.forEach(item => {
+        item.classList.toggle(
+          "active",
+          item === button
+        );
+      });
+
+      stopWorshipPad();
     });
   });
+
+  // ==========================================
+  // 12. WORSHIP TONE SELECTION
+  // ==========================================
+
+  const toneButtons = $$("[data-tone]");
+
+  toneButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const tone = button.dataset.tone;
+
+      if (!toneSettings[tone]) return;
+
+      selectedTone = tone;
+
+      toneButtons.forEach(item => {
+        item.classList.toggle(
+          "active",
+          item === button
+        );
+      });
+
+      stopWorshipPad();
+    });
+  });
+
+  // ==========================================
+  // 13. WORSHIP PAD KEYBOARD CONTROLS
+  // ==========================================
+
+  document.addEventListener("keydown", event => {
+    if (
+      event.repeat ||
+      event.target.closest("input, textarea, select, button")
+    ) {
+      return;
+    }
+
+    const key = event.key.toUpperCase();
+
+    if (!noteFrequencies[key]) return;
+
+    const pad = $$(".worship-pad").find(item => {
+      return (
+        item.dataset.note === key ||
+        item.dataset.key === key
+      );
+    });
+
+    if (pad) {
+      playWorshipNote(key, pad);
+    }
+  });
+
+  // ==========================================
+  // 14. CLEAN UP AUDIO WHEN LEAVING
+  // ==========================================
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopWorshipPad();
+    }
+  });
+
+  // ==========================================
+  // 15. FOOTER YEAR
+  // ==========================================
+
+  const yearElement = $("#year");
+
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
+
 });
