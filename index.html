@@ -1,173 +1,512 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Phil Jazzy | Professional Drummer in Ghana - Book for Events </title>
-<meta name="description" content="Phil Jazzy is Ghana's professional drummer based in Accra. Book for Church, Weddings, Concerts, Studio.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://phil-jazzy.netlify.app/">
-<link rel="stylesheet" href="style.css">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0F0GMCF3WE"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-0F0GMCF3WE');
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Phil Jazzy | Professional Drummer in Accra, Ghana</title>
+
+  <meta name="description" content="Book Phil Jazzy, professional drummer in Accra, Ghana, for church programs, weddings, concerts, live performances and studio recording.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <link rel="canonical" href="https://phil-jazzy.netlify.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Phil Jazzy | Professional Drummer">
+  <meta property="og:description" content="Pocket, feel and musical excellence. Book Phil Jazzy for your next event.">
+  <meta property="og:url" content="https://phil-jazzy.netlify.app/">
+  <meta property="og:image" content="https://phil-jazzy.netlify.app/phil.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0F0GMCF3WE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0F0GMCF3WE');
+  </script>
 </head>
+
 <body>
 
-<div id="progress"></div>
-<nav>
-  <a href="#home">Home</a>
-  <a href="#about">About</a>
-  <a href="#services">Services</a>
-  <a href="#drumkit">Drum Kit</a>
-  <a href="#worship">Worship Pad</a>
-  <a href="#contact">Contact</a>
-</nav>
+  <div id="progress" aria-hidden="true"></div>
 
-<div class="hero" id="home">
-  <div id="notes"></div>
-  <h1 class="glow">PHIL JAZZY</h1>
-  <p class="sub">GCTU STUDENT • PROFESSIONAL DRUMMER</p>
-  <p class="tag" id="rotatingTag">Pocket & Feel</p>
-  <p class="intro">Web application Development student at GCTU, Accra. Drummer for churches, weddings, studios & concerts.</p>
-  <div class="buttons">
-    <a class="btn gold-btn" href="https://wa.me/233206834470?text=Hi%20Phil%20Jazzy%20-%20I%20want%20to%20book%20you" target="_blank" rel="noopener">BOOK NOW · 020 683 4470</a>
-    <a class="btn outline" href="https://www.tiktok.com/@phil.jazzy" target="_blank" rel="noopener">TikTok</a>
-    <a class="btn outline" href="https://www.instagram.com/phil_jazzy" target="_blank" rel="noopener">Instagram</a>
-  </div>
-</div>
+  <!-- NAVIGATION -->
+  <header class="site-header">
+    <nav class="navbar" aria-label="Main navigation">
 
-<div class="wrap">
-  <h2 class="section-title" id="about">ABOUT ME</h2>
-  <div class="card">
-    <p>Phil Jazzy(professionally known as Osae-Hienno Philemon Kodua) is a GCTU student (Web application Development) and a professional drummer based in <b>Accra - Ghana 🇬🇭</b>. I focus on pocket, feel, and serving the song. I balance code 💻 and drums 🥁.</p>
-  </div>
+      <a href="#home" class="nav-brand">
+        <span class="brand-mark">PJ</span>
+        <span>PHIL <span class="gold-text">JAZZY</span></span>
+      </a>
 
-  <h2 class="section-title" id="services">WHAT I DO</h2>
-  <div class="card">
-    <p>✔ Church Programs<br>✔ Weddings & Events<br>✔ Studio Recording<br>✔ Concerts & Live Shows</p>
-    <p><b>Available:</b> Fri – Sun &nbsp;|&nbsp; <b>Location:</b> Accra, Ghana</p>
-  </div>
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Open navigation menu"
+        aria-expanded="false"
+        aria-controls="navLinks"
+        type="button"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
 
-  <h2 class="section-title" id="drumkit">TRY MY KIT</h2>
-  <div class="card" style="text-align:center">
-    <p class="kit-hint">Tap the pads, or use your keyboard: Q W E A S D Z X C</p>
-    <div class="pads">
-      <div class="pad" data-key="q" data-sound="kick">Kick</div>
-      <div class="pad" data-key="w" data-sound="snare">Snare</div>
-      <div class="pad" data-key="e" data-sound="hihat">Hi-Hat</div>
-      <div class="pad" data-key="a" data-sound="tom">Tom</div>
-      <div class="pad" data-key="s" data-sound="ride">Ride</div>
-      <div class="pad" data-key="d" data-sound="crash">Crash</div>
-      <div class="pad" data-key="z" data-sound="clap">Clap</div>
-      <div class="pad" data-key="x" data-sound="cowbell">Cowbell</div>
-      <div class="pad" data-key="c" data-sound="rimshot">Rimshot</div>
+      <div class="nav-links" id="navLinks">
+        <a href="#home" class="active">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#drumkit">Drum Kit</a>
+        <a href="#worship">Worship Pad</a>
+        <a href="#contact">Contact</a>
+        <a href="#contact" class="nav-book">Book Me <span>↗</span></a>
+      </div>
+
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+
+      <div id="notes" aria-hidden="true"></div>
+
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+
+        <div class="hero-label">
+          <span class="status-dot"></span>
+          AVAILABLE FOR BOOKINGS · ACCRA, GHANA
+        </div>
+
+        <p class="hero-eyebrow">THE ART OF RHYTHM</p>
+
+        <h1 class="glow">
+          PHIL <span class="gold-text">JAZZY</span>
+        </h1>
+
+        <p class="sub">PROFESSIONAL DRUMMER <span>•</span> GCTU STUDENT</p>
+
+        <p class="tag" id="rotatingTag">Pocket & Feel</p>
+
+        <p class="intro">
+          Creating unforgettable musical experiences through rhythm,
+          precision and feel. Available for church programs, weddings,
+          studio sessions and live performances.
+        </p>
+
+        <div class="buttons">
+          <a
+            class="btn gold-btn"
+            href="https://wa.me/233206834470?text=Hi%20Phil%20Jazzy%2C%20I%20would%20like%20to%20book%20you."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Book Phil Jazzy <span>↗</span>
+          </a>
+
+          <a class="btn outline" href="#services">
+            Explore Services
+          </a>
+        </div>
+
+        <div class="hero-socials">
+          <a href="https://www.tiktok.com/@phil.jazzy" target="_blank" rel="noopener noreferrer">TikTok ↗</a>
+          <span>•</span>
+          <a href="https://www.instagram.com/phil_jazzy" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+        </div>
+
+      </div>
+
+      <a href="#about" class="scroll-indicator" aria-label="Scroll to About section">
+        <span>SCROLL TO EXPLORE</span>
+        <span class="scroll-arrow">↓</span>
+      </a>
+
+    </section>
+
+
+    <!-- ABOUT -->
+    <section class="section wrap" id="about">
+
+      <div class="section-heading">
+        <span class="section-kicker">GET TO KNOW ME</span>
+        <h2 class="section-title">BEHIND THE <span class="gold-text">RHYTHM.</span></h2>
+        <p>More than playing drums. It's about understanding the music.</p>
+      </div>
+
+      <div class="about-grid">
+
+        <div class="about-visual card">
+          <div class="about-monogram">PJ<span>.</span></div>
+          <p>POCKET. FEEL. PURPOSE.</p>
+        </div>
+
+        <div class="about-content card">
+          <span class="mini-label">MY STORY</span>
+
+          <h3>Every song deserves<br>a <span class="gold-text">feeling.</span></h3>
+
+          <p>
+            I'm Osae-Hienno Philemon Kodua, professionally known as
+            <strong>Phil Jazzy</strong>, a professional drummer based in
+            Accra, Ghana.
+          </p>
+
+          <p>
+            My musical approach is built around pocket, feel, timing
+            and serving the song. Whether behind the drums in church,
+            on stage, at a wedding or in the studio, I believe every
+            performance should communicate something meaningful.
+          </p>
+
+          <p>
+            Beyond music, I'm studying Web Application Development
+            at the Ghana Communication Technology University (GCTU).
+            I enjoy balancing creativity in music with innovation in technology.
+          </p>
+
+          <div class="about-tags">
+            <span>Professional Drummer</span>
+            <span>Web Application Development</span>
+            <span>Accra, Ghana</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SERVICES -->
+    <section class="section wrap" id="services">
+
+      <div class="section-heading">
+        <span class="section-kicker">WHAT I OFFER</span>
+        <h2 class="section-title">MUSIC FOR EVERY <span class="gold-text">MOMENT.</span></h2>
+        <p>Professional drumming tailored to your event and musical needs.</p>
+      </div>
+
+      <div class="services-grid">
+
+        <article class="card service-card">
+          <div class="service-number">01</div>
+          <div class="service-icon">🥁</div>
+          <h3>Church Programs</h3>
+          <p>
+            Worship services, conventions, crusades, concerts,
+            praise sessions and special church events.
+          </p>
+          <a href="#contact" class="service-link">Book for church events ↗</a>
+        </article>
+
+        <article class="card service-card">
+          <div class="service-number">02</div>
+          <div class="service-icon">✦</div>
+          <h3>Weddings & Events</h3>
+          <p>
+            Adding energy, musical expression and unforgettable
+            moments to weddings and special occasions.
+          </p>
+          <a href="#contact" class="service-link">Book for your event ↗</a>
+        </article>
+
+        <article class="card service-card">
+          <div class="service-number">03</div>
+          <div class="service-icon">◉</div>
+          <h3>Studio Recording</h3>
+          <p>
+            Creative drum recording and rhythmic support
+            for studio projects, recordings and productions.
+          </p>
+          <a href="#contact" class="service-link">Discuss a project ↗</a>
+        </article>
+
+        <article class="card service-card">
+          <div class="service-number">04</div>
+          <div class="service-icon">♫</div>
+          <h3>Concerts & Live Shows</h3>
+          <p>
+            Live musical performances, stage productions,
+            band sessions and special appearances.
+          </p>
+          <a href="#contact" class="service-link">Book for a show ↗</a>
+        </article>
+
+      </div>
+
+      <div class="availability-card">
+        <span class="status-dot"></span>
+        <div>
+          <strong>Booking enquiries are welcome</strong>
+          <p>Based in Accra, Ghana · Availability subject to confirmation.</p>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- DRUM KIT -->
+    <section class="section wrap interactive-section" id="drumkit">
+
+      <div class="section-heading">
+        <span class="section-kicker">YOUR TURN TO PLAY</span>
+        <h2 class="section-title">STEP INTO THE <span class="gold-text">GROOVE.</span></h2>
+        <p>Explore the interactive drum kit. Tap a pad or use your keyboard.</p>
+      </div>
+
+      <div class="card instrument-card">
+
+        <div class="instrument-header">
+          <div>
+            <span class="mini-label">INTERACTIVE INSTRUMENT</span>
+            <h3>PHIL JAZZY <span class="gold-text">DRUM KIT</span></h3>
+          </div>
+          <span class="instrument-status">LIVE KIT</span>
+        </div>
+
+        <p class="kit-hint">
+          KEYBOARD:
+          <strong>Q W E</strong>
+          <strong>A S D</strong>
+          <strong>Z X C</strong>
+        </p>
+
+        <div class="pads">
+          <button class="pad" type="button" data-key="q" data-sound="kick" aria-label="Kick drum, Q">Kick <small>Q</small></button>
+          <button class="pad" type="button" data-key="w" data-sound="snare" aria-label="Snare drum, W">Snare <small>W</small></button>
+          <button class="pad" type="button" data-key="e" data-sound="hihat" aria-label="Hi-hat, E">Hi-Hat <small>E</small></button>
+
+          <button class="pad" type="button" data-key="a" data-sound="tom" aria-label="Tom, A">Tom <small>A</small></button>
+          <button class="pad" type="button" data-key="s" data-sound="ride" aria-label="Ride cymbal, S">Ride <small>S</small></button>
+          <button class="pad" type="button" data-key="d" data-sound="crash" aria-label="Crash cymbal, D">Crash <small>D</small></button>
+
+          <button class="pad" type="button" data-key="z" data-sound="clap" aria-label="Clap, Z">Clap <small>Z</small></button>
+          <button class="pad" type="button" data-key="x" data-sound="cowbell" aria-label="Cowbell, X">Cowbell <small>X</small></button>
+          <button class="pad" type="button" data-key="c" data-sound="rimshot" aria-label="Rimshot, C">Rimshot <small>C</small></button>
+        </div>
+
+        <p class="instrument-footer">FEEL THE RHYTHM · FIND YOUR POCKET</p>
+
+      </div>
+
+    </section>
+
+
+    <!-- WORSHIP PAD -->
+    <section class="section wrap interactive-section" id="worship">
+
+      <div class="section-heading">
+        <span class="section-kicker">MUSIC & ATMOSPHERE</span>
+        <h2 class="section-title">THE <span class="gold-text">WORSHIP</span> PAD.</h2>
+        <p>Create warm sustained chords and explore different musical tones.</p>
+      </div>
+
+      <div class="card instrument-card worship-card">
+
+        <div class="instrument-header">
+          <div>
+            <span class="mini-label">CHORD SYNTHESIZER</span>
+            <h3>WORSHIP <span class="gold-text">PAD</span></h3>
+          </div>
+          <span class="instrument-status">SYNTH MODE</span>
+        </div>
+
+        <p class="kit-hint">
+          Tap a note to sustain its chord. Tap it again to stop.
+          Selecting another note changes the chord.
+        </p>
+
+        <div class="control-group">
+          <span class="control-label">CHORD MODE</span>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="majorBtn" type="button" aria-pressed="true">Major</button>
+            <button class="mode-btn" id="minorBtn" type="button" aria-pressed="false">Minor</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <span class="control-label">SOUND PRESET</span>
+          <div class="tone-toggle">
+            <button class="tone-btn active" data-tone="warm" type="button">Warm</button>
+            <button class="tone-btn" data-tone="bright" type="button">Bright</button>
+            <button class="tone-btn" data-tone="strings" type="button">Strings</button>
+            <button class="tone-btn" data-tone="airy" type="button">Airy Choir</button>
+          </div>
+        </div>
+
+        <span class="control-label note-label">SELECT A MUSICAL NOTE</span>
+
+        <div class="pads worship-pads">
+          <button class="wpad" type="button" data-freq="261.63">C</button>
+          <button class="wpad" type="button" data-freq="277.18">C#</button>
+          <button class="wpad" type="button" data-freq="293.66">D</button>
+          <button class="wpad" type="button" data-freq="311.13">D#</button>
+          <button class="wpad" type="button" data-freq="329.63">E</button>
+          <button class="wpad" type="button" data-freq="349.23">F</button>
+          <button class="wpad" type="button" data-freq="369.99">F#</button>
+          <button class="wpad" type="button" data-freq="392.00">G</button>
+          <button class="wpad" type="button" data-freq="415.30">G#</button>
+          <button class="wpad" type="button" data-freq="440.00">A</button>
+          <button class="wpad" type="button" data-freq="466.16">A#</button>
+          <button class="wpad" type="button" data-freq="493.88">B</button>
+        </div>
+
+        <p class="instrument-footer">CREATE · EXPRESS · WORSHIP</p>
+
+      </div>
+
+    </section>
+
+
+    <!-- CONTACT -->
+    <section class="section wrap" id="contact">
+
+      <div class="section-heading">
+        <span class="section-kicker">LET'S MAKE MUSIC</span>
+        <h2 class="section-title">HAVE AN EVENT? <span class="gold-text">LET'S TALK.</span></h2>
+        <p>Tell me about your event or musical project. Let's make it memorable.</p>
+      </div>
+
+      <div class="contact-card card">
+
+        <div class="contact-main">
+          <span class="mini-label">BOOKING & ENQUIRIES</span>
+          <h3>Let's create<br><span class="gold-text">something special.</span></h3>
+          <p>
+            For church programs, weddings, studio sessions,
+            concerts and other bookings, get in touch directly.
+          </p>
+
+          <a
+            class="btn gold-btn contact-book"
+            href="https://wa.me/233206834470?text=Hi%20Phil%20Jazzy%2C%20I%20would%20like%20to%20make%20a%20booking%20enquiry."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Start a WhatsApp Conversation ↗
+          </a>
+        </div>
+
+        <div class="contact-details">
+
+          <a href="tel:+233206834470" class="contact-item">
+            <span class="contact-icon">☎</span>
+            <span>
+              <small>PHONE / WHATSAPP</small>
+              <strong>020 683 4470</strong>
+            </span>
+          </a>
+
+          <a href="https://www.tiktok.com/@phil.jazzy" target="_blank" rel="noopener noreferrer" class="contact-item">
+            <span class="contact-icon">♪</span>
+            <span>
+              <small>TIKTOK</small>
+              <strong>@phil.jazzy ↗</strong>
+            </span>
+          </a>
+
+          <a href="https://www.instagram.com/phil_jazzy" target="_blank" rel="noopener noreferrer" class="contact-item">
+            <span class="contact-icon">◎</span>
+            <span>
+              <small>INSTAGRAM</small>
+              <strong>@phil_jazzy ↗</strong>
+            </span>
+          </a>
+
+          <div class="contact-item">
+            <span class="contact-icon">⌖</span>
+            <span>
+              <small>LOCATION</small>
+              <strong>Accra, Ghana</strong>
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- BACK TO TOP -->
+  <button id="toTop" type="button" aria-label="Back to top">↑</button>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+
+    <a href="#home" class="footer-brand">PHIL <span class="gold-text">JAZZY.</span></a>
+
+    <p>POCKET & FEEL. SERVE THE SONG.</p>
+
+    <div class="footer-links">
+      <a href="https://www.tiktok.com/@phil.jazzy" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a href="https://www.instagram.com/phil_jazzy" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://wa.me/233206834470" target="_blank" rel="noopener noreferrer">WhatsApp</a>
     </div>
-  </div>
 
-  <h2 class="section-title" id="worship">WORSHIP PAD</h2>
-  <div class="card" style="text-align:center">
-    <p class="kit-hint">Tap a note to sustain a warm chord — tap again, or tap another note, to stop it. Switch Major/Minor below.</p>
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="majorBtn">Major</button>
-      <button class="mode-btn" id="minorBtn">Minor</button>
+    <p class="copyright">
+      © 2026 Phil Jazzy. All rights reserved. · Accra, Ghana.
+    </p>
+
+  </footer>
+
+
+  <!-- BOOKING ASSISTANT -->
+  <button
+    id="pj-ai-btn"
+    type="button"
+    aria-label="Open Phil Jazzy booking assistant"
+    aria-expanded="false"
+    aria-controls="pj-ai-box"
+  >
+    🥁
+  </button>
+
+  <section id="pj-ai-box" aria-label="Phil Jazzy booking assistant" aria-hidden="true">
+
+    <div id="pj-ai-header">
+      <div class="assistant-avatar">PJ</div>
+      <div class="assistant-heading">
+        <strong>Phil Jazzy</strong>
+        <small>BOOKING ASSISTANT · ONLINE</small>
+      </div>
+      <button id="pj-ai-close" type="button" aria-label="Close assistant">×</button>
     </div>
-    <div class="tone-toggle">
-      <button class="tone-btn active" data-tone="warm">Warm</button>
-      <button class="tone-btn" data-tone="bright">Bright</button>
-      <button class="tone-btn" data-tone="strings">Strings</button>
-      <button class="tone-btn" data-tone="airy">Airy Choir</button>
+
+    <div id="pj-ai-messages" aria-live="polite" aria-relevant="additions"></div>
+
+    <div class="assistant-input-area">
+      <input
+        id="pj-ai-text"
+        type="text"
+        placeholder="Ask about bookings..."
+        aria-label="Type your message"
+        maxlength="500"
+        autocomplete="off"
+      >
+      <button id="pj-ai-send" type="button" aria-label="Send message">➤</button>
     </div>
-    <div class="pads">
-      <div class="wpad" data-freq="261.63">C</div>
-      <div class="wpad" data-freq="277.18">C#</div>
-      <div class="wpad" data-freq="293.66">D</div>
-      <div class="wpad" data-freq="311.13">D#</div>
-      <div class="wpad" data-freq="329.63">E</div>
-      <div class="wpad" data-freq="349.23">F</div>
-      <div class="wpad" data-freq="369.99">F#</div>
-      <div class="wpad" data-freq="392.00">G</div>
-      <div class="wpad" data-freq="415.30">G#</div>
-      <div class="wpad" data-freq="440.00">A</div>
-      <div class="wpad" data-freq="466.16">A#</div>
-      <div class="wpad" data-freq="493.88">B</div>
-    </div>
-  </div>
 
-  <h2 class="section-title" id="contact">CONTACT</h2>
-  <div class="card">
-    <p>📞 <a href="tel:0206834470">020 683 4470</a><br>🎵 TikTok: @phil.jazzy<br>📸 IG: @phil_jazzy<br>📍 Accra, Ghana</p>
-    <button class="btn gold-btn" id="bookBtn">Quick Book on WhatsApp</button>
-  </div>
-</div>
+    <p class="assistant-disclaimer">Automated booking assistant · Availability requires confirmation.</p>
 
-<button id="toTop" aria-label="Back to top">↑</button>
-<footer>© 2026 Phil Jazzy · GCTU Student · Accra, Ghana</footer>
-<script src="script.js"></script>
+  </section>
 
-<style>
-#pj-ai-btn{position:fixed;bottom:20px;left:20px;width:65px;height:65px;background:linear-gradient(135deg,#d4af37,#b8860b);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999999;box-shadow:0 6px 25px rgba(212,175,55,.5);font-size:30px;animation:pulse 2s infinite}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-#pj-ai-box{position:fixed;bottom:95px;left:20px;width:340px;max-width:90vw;height:480px;background:white;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35);display:none;flex-direction:column;z-index:999999;font-family:'Segoe UI',sans-serif;overflow:hidden;border:2px solid #d4af37}
-#pj-ai-header{background:#0a0a0a;color:#d4af37;padding:14px;text-align:center;font-weight:bold}
-#pj-ai-messages{flex:1;padding:14px;overflow-y:auto;font-size:14px;display:flex;flex-direction:column;gap:8px;background:#fcfcfc}
-.pj-msg{padding:11px 14px;border-radius:16px;max-width:82%;line-height:1.4}
-.pj-bot{background:#111;color:#fff;border-bottom-left-radius:4px}
-.pj-user{background:#d4af37;color:#000;font-weight:500;align-self:flex-end;border-bottom-right-radius:4px}
-.pj-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.pj-quick button{background:white;border:1px solid #d4af37;color:#b8860b;padding:6px 10px;border-radius:20px;font-size:12px;cursor:pointer}
-.pj-typing{font-style:italic;color:#888;font-size:12px}
-#pj-ai-input{display:flex;border-top:1px solid #eee}
-#pj-ai-input input{flex:1;padding:14px;border:none;outline:none}
-#pj-ai-input button{background:#0a0a0a;color:#d4af37;border:none;padding:0 18px;cursor:pointer;font-weight:bold}
-</style>
-<div id="pj-ai-btn">🥁</div>
-<div id="pj-ai-box">
-  <div id="pj-ai-header">Phil Jazzy AI 🤖<br><small style="color:#aaa;font-weight:normal;font-size:11px">🟢 Online • Drums • TikTok @phil.jazzy</small></div>
-  <div id="pj-ai-messages"></div>
-  <div id="pj-ai-input"><input id="pj-ai-text" placeholder="Type: price, availability..." /><button id="pj-ai-send">➤</button></div>
-</div>
 
-<script>
-(function(){
-const btn=document.getElementById('pj-ai-btn');
-const box=document.getElementById('pj-ai-box');
-const msgs=document.getElementById('pj-ai-messages');
-const input=document.getElementById('pj-ai-text');
-const sendBtn=document.getElementById('pj-ai-send');
-let data={event:'',date:'',budget:''}, step=0, opened=false;
-const quickReplies=["💰 Price List","📅 Availability","🎥 TikTok Demo","📍 My Event..."];
-function addMsg(t,u=false,q=false){const d=document.createElement('div');d.className=`pj-msg ${u?'pj-user':'pj-bot'}`;d.innerHTML=t;msgs.appendChild(d);if(q&&!u){const w=document.createElement('div');w.className='pj-quick';quickReplies.forEach(x=>{const b=document.createElement('button');b.innerText=x;b.onclick=()=>{input.value=x;send();};w.appendChild(b);});msgs.appendChild(w);}msgs.scrollTop=msgs.scrollHeight;}
-function typingThen(t,q=false){const x=document.createElement('div');x.className='pj-typing';x.innerText='AI is typing...';msgs.appendChild(x);msgs.scrollTop=msgs.scrollHeight;setTimeout(()=>{x.remove();addMsg(t,false,q);},800);}
-function send(){const v=input.value.trim();if(!v)return;addMsg(v,true);input.value='';handle(v);}
-function handle(txt){
-  const l=txt.toLowerCase();
-  if(l.includes('price')||l.includes('💰')){typingThen("Phil Jazzy Rate Card 👇<br><br>• Church Service: GH₵250-400<br>• Wedding: GH₵400-700<br>• Studio/Recording: GH₵200/hr<br>• Full Band: GH₵800+<br><br>Tell me your <b>event type</b> for exact quote!",true);return;}
-  if(l.includes('available')||l.includes('📅')){typingThen("🟢 Checking Phil Jazzy's calendar... He's free this week! What date? e.g., 5th Dec, Accra",true);return;}
-  if(l.includes('tiktok')||l.includes('demo')||l.includes('🎥')||l.includes('watch')){
-    typingThen("Watch Phil Jazzy live 🥁🔥<br><br>👉 <a href='https://www.tiktok.com/@phil.jazzy' target='_blank' style='color:#d4af37;font-weight:bold;text-decoration:none'>TikTok @phil.jazzy</a><br>Grooves, chops & live sessions!<br><br>Like what you see? Tell me your event date!",true);return;
-  }
-  if(step===0){data.event=txt;step=1;typingThen(`Love it! <b>${txt}</b> 🔥<br><br>When & where is it?`);}
-  else if(step===1){data.date=txt;step=2;typingThen(`Perfect — noted: <b>${txt}</b><br><br>What's your budget? (GH₵250 - GH₵1200+)`);}
-  else if(step===2){
-    data.budget=txt;
-    typingThen(`Amazing! Summary:<br><br>🎵 Event: ${data.event}<br>📅 Date: ${data.date}<br>💰 Budget: ${txt}<br><br>Tap below to send to Phil Jazzy!`);
-    setTimeout(()=>{
-      const wa=document.createElement('a');
-      wa.href=`https://wa.me/233206834470?text=${encodeURIComponent(`Hi Phil Jazzy! 🤖 AI Booking:\nEvent: ${data.event}\nDate: ${data.date}\nBudget: ${data.budget}\n\nFrom your website chatbot`)}`;
-      wa.target="_blank";wa.innerHTML="📲 SEND TO WHATSAPP & GET CONFIRMED";
-      wa.style="display:block;background:#25D366;color:white;text-align:center;padding:12px;border-radius:10px;margin-top:10px;text-decoration:none;font-weight:bold";
-      msgs.appendChild(wa);msgs.scrollTop=msgs.scrollHeight;
-    },1000);step=3;
-  } else {typingThen("Summary above 👆 Tap WhatsApp. Type 'restart' to start over.",true); if(l.includes('restart')){data={};step=0;setTimeout(()=>typingThen("Restarted! What event do you have?",true),500);}}
-}
-btn.onclick=()=>{box.style.display=box.style.display==='flex'?'none':'flex';if(!opened){addMsg("Hi! I'm Phil Jazzy's AI assistant 🤖<br><br>I can check price, availability & book you in 30 secs.<br>Plus see his TikTok demos.<br><br><b>What event do you have?</b>",false,true);opened=true;}};
-sendBtn.onclick=send;input.onkeypress=(e)=>{if(e.key==='Enter')send();};
-})();
-</script>
+  <script src="script.js"></script>
+
 </body>
 </html>
