@@ -1,10 +1,11 @@
 
-document.addEventListener("DOMContentLoaded", () => {
-  "use strict";
+"use strict";
 
-  // ==========================================
-  // 1. HELPERS
-  // ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* =========================================
+     HELPERS
+  ========================================= */
 
   const $ = (selector, parent = document) =>
     parent.querySelector(selector);
@@ -12,18 +13,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const $$ = (selector, parent = document) =>
     [...parent.querySelectorAll(selector)];
 
-  const reducedMotion = window.matchMedia(
+  const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
-  // ==========================================
-  // 2. MOBILE NAVIGATION
-  // ==========================================
+  /* =========================================
+     1. MOBILE NAVIGATION
+  ========================================= */
 
   const menuToggle = $("#menuToggle");
   const navLinks = $("#navLinks");
 
   if (menuToggle && navLinks) {
+
     const closeMenu = () => {
       navLinks.classList.remove("open");
       menuToggle.classList.remove("active");
@@ -32,22 +34,18 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.classList.remove("menu-open");
     };
 
-    const openMenu = () => {
-      navLinks.classList.add("open");
-      menuToggle.classList.add("active");
-      menuToggle.setAttribute("aria-expanded", "true");
-      menuToggle.setAttribute("aria-label", "Close navigation menu");
-      document.body.classList.add("menu-open");
-    };
-
     menuToggle.addEventListener("click", () => {
-      const isOpen = navLinks.classList.contains("open");
+      const isOpen = !navLinks.classList.contains("open");
 
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
+      navLinks.classList.toggle("open", isOpen);
+      menuToggle.classList.toggle("active", isOpen);
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute(
+        "aria-label",
+        isOpen ? "Close navigation menu" : "Open navigation menu"
+      );
+
+      document.body.classList.toggle("menu-open", isOpen);
     });
 
     $$("a", navLinks).forEach(link => {
@@ -60,125 +58,32 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
+    document.addEventListener("click", event => {
+      if (
+        navLinks.classList.contains("open") &&
+        !navLinks.contains(event.target) &&
+        !menuToggle.contains(event.target)
+      ) {
+        closeMenu();
+      }
+    });
+
     window.addEventListener("resize", () => {
-      if (window.innerWidth > 850) {
+      if (window.innerWidth > 760) {
         closeMenu();
       }
     });
   }
 
-  // ==========================================
-  // 3. SCROLL PROGRESS
-  // ==========================================
 
-  const progress = $("#progress");
-
-  function updateProgress() {
-    if (!progress) return;
-
-    const scrollHeight =
-      document.documentElement.scrollHeight - window.innerHeight;
-
-    const percentage = scrollHeight > 0
-      ? (window.scrollY / scrollHeight) * 100
-      : 0;
-
-    progress.style.width = `${percentage}%`;
-  }
-
-  window.addEventListener("scroll", updateProgress, {
-    passive: true
-  });
-
-  updateProgress();
-
-  // ==========================================
-  // 4. BACK TO TOP
-  // ==========================================
-
-  const toTop = $("#toTop");
-
-  if (toTop) {
-    window.addEventListener("scroll", () => {
-      toTop.classList.toggle("show", window.scrollY > 400);
-    }, { passive: true });
-
-    toTop.addEventListener("click", () => {
-      window.scrollTo({
-        top: 0,
-        behavior: reducedMotion ? "instant" : "smooth"
-      });
-    });
-  }
-
-  // ==========================================
-  // 5. SCROLL REVEAL
-  // ==========================================
-
-  const cards = $$(".card");
-
-  if ("IntersectionObserver" in window && !reducedMotion) {
-    const observer = new IntersectionObserver(
-      (entries, currentObserver) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            currentObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    cards.forEach(card => observer.observe(card));
-  } else {
-    cards.forEach(card => card.classList.add("visible"));
-  }
-
-  // ==========================================
-  // 6. ACTIVE NAVIGATION
-  // ==========================================
-
-  const navAnchors = $$(".nav-links a[href^='#']");
-  const sections = navAnchors
-    .map(link => $(link.getAttribute("href")))
-    .filter(Boolean);
-
-  if ("IntersectionObserver" in window && sections.length) {
-    const sectionObserver = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-
-          navAnchors.forEach(link => {
-            const isActive =
-              link.getAttribute("href") === `#${entry.target.id}`;
-
-            link.classList.toggle("active", isActive);
-
-            if (isActive) {
-              link.setAttribute("aria-current", "location");
-            } else {
-              link.removeAttribute("aria-current");
-            }
-          });
-        });
-      },
-      {
-        rootMargin: "-30% 0px -60% 0px"
-      }
-    );
-
-    sections.forEach(section => sectionObserver.observe(section));
-  }
-
-  // ==========================================
-  // 7. ROTATING HERO TAGLINE
-  // ==========================================
+  /* =========================================
+     2. HERO TAGLINE ROTATION
+  ========================================= */
 
   const rotatingTag = $("#rotatingTag");
 
   if (rotatingTag) {
+
     const phrases = [
       "Pocket & Feel",
       "Serve The Song",
@@ -186,302 +91,580 @@ document.addEventListener("DOMContentLoaded", () => {
       "Accra's Steady Groove"
     ];
 
-    if (reducedMotion) {
-      rotatingTag.textContent = phrases[0];
-    } else {
-      let phraseIndex = 0;
-      let charIndex = 0;
-      let deleting = false;
+    let phraseIndex = 0;
+    let characterIndex = phrases[0].length;
+    let deleting = false;
 
-      function typeTagline() {
-        const phrase = phrases[phraseIndex];
+    if (!prefersReducedMotion) {
 
-        charIndex += deleting ? -1 : 1;
+      const typeTagline = () => {
 
-        rotatingTag.textContent = phrase.substring(0, charIndex);
+        const currentPhrase = phrases[phraseIndex];
 
-        let delay = deleting ? 45 : 90;
+        if (!deleting) {
+          characterIndex++;
 
-        if (!deleting && charIndex === phrase.length) {
-          deleting = true;
-          delay = 1700;
-        } else if (deleting && charIndex === 0) {
-          deleting = false;
-          phraseIndex = (phraseIndex + 1) % phrases.length;
-          delay = 350;
+          rotatingTag.textContent = currentPhrase.substring(
+            0,
+            characterIndex
+          );
+
+          if (characterIndex >= currentPhrase.length) {
+            deleting = true;
+            setTimeout(typeTagline, 1800);
+            return;
+          }
+
+        } else {
+          characterIndex--;
+
+          rotatingTag.textContent = currentPhrase.substring(
+            0,
+            characterIndex
+          );
+
+          if (characterIndex <= 0) {
+            deleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+          }
         }
 
-        window.setTimeout(typeTagline, delay);
-      }
+        setTimeout(typeTagline, deleting ? 45 : 85);
+      };
 
-      typeTagline();
+      setTimeout(typeTagline, 1800);
     }
   }
 
-  // ==========================================
-  // 8. FLOATING MUSIC NOTES
-  // ==========================================
+
+  /* =========================================
+     3. FLOATING MUSIC NOTES
+  ========================================= */
 
   const notesContainer = $("#notes");
 
-  if (notesContainer && !reducedMotion) {
-    const symbols = ["♪", "♫", "♬", "♩"];
+  if (notesContainer && !prefersReducedMotion) {
+
+    const notes = ["♪", "♫", "♬", "♩"];
 
     for (let i = 0; i < 14; i++) {
+
       const note = document.createElement("span");
 
       note.className = "note";
-      note.textContent =
-        symbols[Math.floor(Math.random() * symbols.length)];
+      note.textContent = notes[
+        Math.floor(Math.random() * notes.length)
+      ];
 
       note.style.left = `${Math.random() * 100}%`;
-      note.style.animationDelay = `${Math.random() * 12}s`;
-      note.style.animationDuration =
-        `${10 + Math.random() * 12}s`;
+      note.style.animationDuration = `${9 + Math.random() * 12}s`;
+      note.style.animationDelay = `${Math.random() * 10}s`;
+      note.style.fontSize = `${16 + Math.random() * 18}px`;
 
       notesContainer.appendChild(note);
     }
   }
 
-  // ==========================================
-  // 9. DRUM KIT AUDIO ENGINE
-  // ==========================================
 
-  let drumContext = null;
-  let drumMaster = null;
+  /* =========================================
+     4. SCROLL PROGRESS + BACK TO TOP
+  ========================================= */
 
-  function initDrumAudio() {
-    if (drumContext) return drumContext;
+  const progress = $("#progress");
+  const toTop = $("#toTop");
 
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
+  const updateScrollUI = () => {
 
-    if (!AudioContextClass) {
-      console.warn("This browser does not support Web Audio.");
-      return null;
+    const scrollTop =
+      window.scrollY || document.documentElement.scrollTop;
+
+    const scrollHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    const percentage = scrollHeight > 0
+      ? (scrollTop / scrollHeight) * 100
+      : 0;
+
+    if (progress) {
+      progress.style.width = `${percentage}%`;
     }
 
-    drumContext = new AudioContextClass();
+    if (toTop) {
+      toTop.classList.toggle("show", scrollTop > 450);
+    }
+  };
 
-    const compressor = drumContext.createDynamicsCompressor();
-    drumMaster = drumContext.createGain();
+  window.addEventListener("scroll", updateScrollUI, {
+    passive: true
+  });
 
-    drumMaster.gain.value = 0.8;
+  updateScrollUI();
 
-    compressor.threshold.value = -18;
-    compressor.knee.value = 20;
-    compressor.ratio.value = 8;
-    compressor.attack.value = 0.003;
-    compressor.release.value = 0.2;
-
-    drumMaster.connect(compressor);
-    compressor.connect(drumContext.destination);
-
-    return drumContext;
+  if (toTop) {
+    toTop.addEventListener("click", () => {
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReducedMotion ? "auto" : "smooth"
+      });
+    });
   }
 
-  async function resumeDrumAudio() {
-    const context = initDrumAudio();
 
-    if (!context) return null;
+  /* =========================================
+     5. CARD REVEAL ANIMATION
+  ========================================= */
 
-    if (context.state === "suspended") {
-      try {
-        await context.resume();
-      } catch (error) {
-        console.warn("Drum audio could not start:", error);
+  const cards = $$(".card");
+
+  if ("IntersectionObserver" in window && !prefersReducedMotion) {
+
+    const cardObserver = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            cardObserver.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.12
       }
-    }
-
-    return context;
-  }
-
-  function makeDrumGain(volume, duration) {
-    const gain = drumContext.createGain();
-    const now = drumContext.currentTime;
-
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      now + duration
     );
 
-    gain.connect(drumMaster);
+    cards.forEach(card => cardObserver.observe(card));
 
-    return gain;
+  } else {
+    cards.forEach(card => card.classList.add("visible"));
+  }
+
+
+  /* =========================================
+     6. ACTIVE NAVIGATION
+  ========================================= */
+
+  const sections = $$("main section[id]");
+  const navigationLinks = $$("#navLinks a[href^='#']");
+
+  if ("IntersectionObserver" in window && sections.length) {
+
+    const sectionObserver = new IntersectionObserver(
+      entries => {
+
+        entries.forEach(entry => {
+
+          if (!entry.isIntersecting) return;
+
+          const currentId = entry.target.id;
+
+          navigationLinks.forEach(link => {
+
+            const isActive =
+              link.getAttribute("href") === `#${currentId}`;
+
+            link.classList.toggle("active", isActive);
+          });
+        });
+
+      },
+      {
+        rootMargin: "-30% 0px -60% 0px",
+        threshold: 0
+      }
+    );
+
+    sections.forEach(section => {
+      sectionObserver.observe(section);
+    });
+  }
+
+
+  /* =========================================
+     7. AUDIO ENGINE
+  ========================================= */
+
+  const AudioContextClass =
+    window.AudioContext || window.webkitAudioContext;
+
+  let audioContext = null;
+  let masterGain = null;
+  let audioReady = false;
+
+  function initializeAudio() {
+
+    if (!AudioContextClass) {
+      alert("Your browser does not support the audio features.");
+      return false;
+    }
+
+    if (!audioContext) {
+
+      audioContext = new AudioContextClass();
+
+      masterGain = audioContext.createGain();
+      masterGain.gain.value = 0.7;
+
+      const compressor = audioContext.createDynamicsCompressor();
+
+      compressor.threshold.value = -18;
+      compressor.knee.value = 20;
+      compressor.ratio.value = 4;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.25;
+
+      masterGain.connect(compressor);
+      compressor.connect(audioContext.destination);
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    audioReady = true;
+    return true;
+  }
+
+  function getAudio() {
+    if (!initializeAudio()) return null;
+    return audioContext;
+  }
+
+  function getOutput() {
+    if (!initializeAudio()) return null;
+    return masterGain;
+  }
+
+
+  /* =========================================
+     8. DRUM SOUND GENERATORS
+  ========================================= */
+
+  function createNoise(duration = 0.2) {
+
+    const context = getAudio();
+    if (!context) return null;
+
+    const bufferSize = Math.floor(
+      context.sampleRate * duration
+    );
+
+    const buffer = context.createBuffer(
+      1,
+      bufferSize,
+      context.sampleRate
+    );
+
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+
+    return source;
   }
 
   function playKick() {
-    const now = drumContext.currentTime;
-    const oscillator = drumContext.createOscillator();
-    const gain = makeDrumGain(1.1, 0.5);
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
     oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(150, now);
-    oscillator.frequency.exponentialRampToValueAtTime(38, now + 0.45);
+    oscillator.frequency.setValueAtTime(150, context.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(
+      42,
+      context.currentTime + 0.22
+    );
+
+    gain.gain.setValueAtTime(0.95, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.28
+    );
 
     oscillator.connect(gain);
-    oscillator.start(now);
-    oscillator.stop(now + 0.5);
+    gain.connect(output);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.3);
   }
 
   function playSnare() {
-    const now = drumContext.currentTime;
-    const size = Math.floor(drumContext.sampleRate * 0.22);
 
-    const buffer = drumContext.createBuffer(
-      1,
-      size,
-      drumContext.sampleRate
-    );
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
 
-    const data = buffer.getChannelData(0);
+    const noise = createNoise(0.22);
+    if (!noise) return;
 
-    for (let i = 0; i < size; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+    const filter = context.createBiquadFilter();
+    const noiseGain = context.createGain();
 
-    const noise = drumContext.createBufferSource();
-    const filter = drumContext.createBiquadFilter();
-    const noiseGain = makeDrumGain(0.65, 0.2);
-
-    noise.buffer = buffer;
     filter.type = "highpass";
     filter.frequency.value = 1200;
 
+    noiseGain.gain.setValueAtTime(0.75, context.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.2
+    );
+
     noise.connect(filter);
     filter.connect(noiseGain);
-    noise.start(now);
+    noiseGain.connect(output);
 
-    const oscillator = drumContext.createOscillator();
-    const oscGain = makeDrumGain(0.4, 0.12);
+    const oscillator = context.createOscillator();
+    const toneGain = context.createGain();
 
     oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(190, now);
-    oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+    oscillator.frequency.value = 180;
 
-    oscillator.connect(oscGain);
-    oscillator.start(now);
-    oscillator.stop(now + 0.13);
+    toneGain.gain.setValueAtTime(0.35, context.currentTime);
+    toneGain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.12
+    );
+
+    oscillator.connect(toneGain);
+    toneGain.connect(output);
+
+    noise.start();
+    noise.stop(context.currentTime + 0.22);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.13);
   }
 
   function playHiHat() {
-    const now = drumContext.currentTime;
-    const size = Math.floor(drumContext.sampleRate * 0.12);
 
-    const buffer = drumContext.createBuffer(
-      1,
-      size,
-      drumContext.sampleRate
-    );
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
 
-    const data = buffer.getChannelData(0);
+    const noise = createNoise(0.12);
+    if (!noise) return;
 
-    for (let i = 0; i < size; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
 
-    const noise = drumContext.createBufferSource();
-    const filter = drumContext.createBiquadFilter();
-    const gain = makeDrumGain(0.28, 0.12);
-
-    noise.buffer = buffer;
     filter.type = "highpass";
     filter.frequency.value = 7500;
 
+    gain.gain.setValueAtTime(0.3, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.09
+    );
+
     noise.connect(filter);
     filter.connect(gain);
-    noise.start(now);
+    gain.connect(output);
+
+    noise.start();
+    noise.stop(context.currentTime + 0.12);
   }
 
   function playTom() {
-    const now = drumContext.currentTime;
-    const oscillator = drumContext.createOscillator();
-    const gain = makeDrumGain(0.7, 0.35);
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
     oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(180, now);
-    oscillator.frequency.exponentialRampToValueAtTime(65, now + 0.3);
-
-    oscillator.connect(gain);
-    oscillator.start(now);
-    oscillator.stop(now + 0.35);
-  }
-
-  function playCymbal(frequency, duration, volume) {
-    const now = drumContext.currentTime;
-    const size = Math.floor(drumContext.sampleRate * duration);
-
-    const buffer = drumContext.createBuffer(
-      1,
-      size,
-      drumContext.sampleRate
+    oscillator.frequency.setValueAtTime(180, context.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(
+      75,
+      context.currentTime + 0.3
     );
 
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < size; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-
-    const noise = drumContext.createBufferSource();
-    const filter = drumContext.createBiquadFilter();
-    const gain = drumContext.createGain();
-
-    noise.buffer = buffer;
-    filter.type = "highpass";
-    filter.frequency.value = frequency;
-
-    gain.gain.setValueAtTime(volume, now);
+    gain.gain.setValueAtTime(0.65, context.currentTime);
     gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      now + duration
+      0.001,
+      context.currentTime + 0.35
+    );
+
+    oscillator.connect(gain);
+    gain.connect(output);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.36);
+  }
+
+  function playRide() {
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const noise = createNoise(0.7);
+    if (!noise) return;
+
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+
+    filter.type = "highpass";
+    filter.frequency.value = 4500;
+
+    gain.gain.setValueAtTime(0.28, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.65
     );
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(drumMaster);
+    gain.connect(output);
 
-    noise.start(now);
-    noise.stop(now + duration);
-  }
-
-  function playRide() {
-    playCymbal(4500, 0.35, 0.24);
+    noise.start();
+    noise.stop(context.currentTime + 0.7);
   }
 
   function playCrash() {
-    playCymbal(1800, 1.4, 0.65);
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const noise = createNoise(1.5);
+    if (!noise) return;
+
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+
+    filter.type = "highpass";
+    filter.frequency.value = 3000;
+
+    gain.gain.setValueAtTime(0.42, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 1.4
+    );
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(output);
+
+    noise.start();
+    noise.stop(context.currentTime + 1.5);
+  }
+
+  function playClap() {
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const noise = createNoise(0.2);
+    if (!noise) return;
+
+    const filter = context.createBiquadFilter();
+    const gain = context.createGain();
+
+    filter.type = "bandpass";
+    filter.frequency.value = 1800;
+
+    gain.gain.setValueAtTime(0.6, context.currentTime);
+
+    [0.015, 0.045, 0.075].forEach((delay, index) => {
+
+      gain.gain.setValueAtTime(
+        0.6 - index * 0.12,
+        context.currentTime + delay
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        context.currentTime + delay + 0.04
+      );
+    });
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(output);
+
+    noise.start();
+    noise.stop(context.currentTime + 0.2);
   }
 
   function playCowbell() {
-    const now = drumContext.currentTime;
 
-    [540, 800].forEach(frequency => {
-      const oscillator = drumContext.createOscillator();
-      const gain = makeDrumGain(0.35, 0.18);
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    [540, 800].forEach((frequency, index) => {
+
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
 
       oscillator.type = "square";
       oscillator.frequency.value = frequency;
 
+      gain.gain.setValueAtTime(
+        0.18,
+        context.currentTime
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        context.currentTime + 0.25
+      );
+
       oscillator.connect(gain);
-      oscillator.start(now);
-      oscillator.stop(now + 0.18);
+      gain.connect(output);
+
+      oscillator.start(context.currentTime + index * 0.002);
+      oscillator.stop(context.currentTime + 0.26);
     });
   }
 
   function playRimshot() {
-    const now = drumContext.currentTime;
-    const oscillator = drumContext.createOscillator();
-    const gain = makeDrumGain(0.5, 0.08);
+
+    const context = getAudio();
+    const output = getOutput();
+    if (!context || !output) return;
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
 
     oscillator.type = "triangle";
-    oscillator.frequency.value = 1600;
+    oscillator.frequency.setValueAtTime(
+      900,
+      context.currentTime
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+      250,
+      context.currentTime + 0.07
+    );
+
+    gain.gain.setValueAtTime(0.45, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      context.currentTime + 0.09
+    );
 
     oscillator.connect(gain);
-    oscillator.start(now);
-    oscillator.stop(now + 0.08);
+    gain.connect(output);
+
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.1);
   }
+
+
+  /* =========================================
+     9. DRUM PAD CONTROLS
+  ========================================= */
 
   const drumSounds = {
     kick: playKick,
@@ -490,296 +673,292 @@ document.addEventListener("DOMContentLoaded", () => {
     tom: playTom,
     ride: playRide,
     crash: playCrash,
-    clap: playSnare,
+    clap: playClap,
     cowbell: playCowbell,
     rimshot: playRimshot
   };
 
-  async function triggerDrum(sound, pad) {
-    if (!drumSounds[sound]) return;
-
-    const context = await resumeDrumAudio();
-    if (!context) return;
-
-    drumSounds[sound]();
-
-    if (pad) {
-      pad.classList.add("playing");
-
-      window.setTimeout(() => {
-        pad.classList.remove("playing");
-      }, 130);
-    }
-  }
-
   const drumPads = $$(".pad");
 
-  drumPads.forEach(pad => {
-    const sound = pad.dataset.sound;
+  function triggerDrum(pad) {
 
-    if (!sound || !drumSounds[sound]) {
-      console.warn("Unknown drum sound:", sound);
-      return;
-    }
+    if (!pad) return;
+
+    const soundName = pad.dataset.sound;
+    const sound = drumSounds[soundName];
+
+    if (!sound) return;
+
+    sound();
+
+    pad.classList.remove("hit");
+
+    // Restart the visual feedback animation.
+    void pad.offsetWidth;
+
+    pad.classList.add("hit");
+
+    setTimeout(() => {
+      pad.classList.remove("hit");
+    }, 130);
+  }
+
+  drumPads.forEach(pad => {
 
     pad.addEventListener("pointerdown", event => {
       event.preventDefault();
-      triggerDrum(sound, pad);
+      triggerDrum(pad);
     });
   });
-
-  const drumKeys = {
-    q: "kick",
-    w: "snare",
-    e: "hihat",
-    a: "tom",
-    s: "ride",
-    d: "crash",
-    z: "clap",
-    x: "cowbell",
-    c: "rimshot"
-  };
 
   document.addEventListener("keydown", event => {
+
+    if (event.repeat) return;
+
+    const target = event.target;
+
     if (
-      event.repeat ||
-      event.target.closest("input, textarea, select")
-    ) return;
+      target &&
+      (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      )
+    ) {
+      return;
+    }
 
-    const sound = drumKeys[event.key.toLowerCase()];
-    if (!sound) return;
+    const key = event.key.toLowerCase();
 
-    const pad = drumPads.find(
-      item => item.dataset.sound === sound
+    const pad = drumPads.find(item =>
+      item.dataset.key === key
     );
 
-    triggerDrum(sound, pad);
+    if (pad) {
+      event.preventDefault();
+      triggerDrum(pad);
+    }
   });
 
-  // ==========================================
-  // 10. WORSHIP PAD AUDIO ENGINE
-  // ==========================================
 
-  let worshipContext = null;
-  let worshipMaster = null;
-  let activeWorshipNodes = [];
+  /* =========================================
+     10. WORSHIP PAD ENGINE
+  ========================================= */
+
+  let chordMode = "major";
+  let currentTone = "warm";
   let activeWorshipPad = null;
+  let activeVoices = [];
 
-  let selectedMode = "major";
-  let selectedTone = "warm";
-
-  const chordIntervals = {
-    major: [0, 4, 7],
-    minor: [0, 3, 7]
-  };
+  const majorBtn = $("#majorBtn");
+  const minorBtn = $("#minorBtn");
+  const toneButtons = $$(".tone-btn");
+  const worshipPads = $$(".wpad");
 
   const toneSettings = {
+
     warm: {
-      type: "triangle",
-      volume: 0.17,
-      attack: 0.4,
-      detune: 0
+      wave: "sine",
+      volume: 0.12,
+      filter: 1100,
+      detune: 2,
+      attack: 0.7,
+      release: 0.9
     },
+
     bright: {
-      type: "sawtooth",
-      volume: 0.10,
-      attack: 0.12,
-      detune: 3
+      wave: "triangle",
+      volume: 0.085,
+      filter: 2600,
+      detune: 1,
+      attack: 0.3,
+      release: 0.7
     },
+
     strings: {
-      type: "sawtooth",
-      volume: 0.11,
-      attack: 0.8,
-      detune: 7
+      wave: "sawtooth",
+      volume: 0.045,
+      filter: 1800,
+      detune: 5,
+      attack: 0.9,
+      release: 1.1
     },
+
     airy: {
-      type: "sine",
-      volume: 0.18,
-      attack: 1.0,
-      detune: 0
+      wave: "sine",
+      volume: 0.1,
+      filter: 3200,
+      detune: 7,
+      attack: 1.1,
+      release: 1.2
     }
   };
 
-  function initWorshipAudio() {
-    if (worshipContext) return worshipContext;
-
-    const AudioContextClass =
-      window.AudioContext || window.webkitAudioContext;
-
-    if (!AudioContextClass) {
-      console.warn("Worship pad audio is not supported.");
-      return null;
-    }
-
-    worshipContext = new AudioContextClass();
-
-    const compressor = worshipContext.createDynamicsCompressor();
-
-    worshipMaster = worshipContext.createGain();
-    worshipMaster.gain.value = 0.7;
-
-    compressor.threshold.value = -20;
-    compressor.knee.value = 18;
-    compressor.ratio.value = 6;
-
-    worshipMaster.connect(compressor);
-    compressor.connect(worshipContext.destination);
-
-    return worshipContext;
-  }
-
-  async function resumeWorshipAudio() {
-    const context = initWorshipAudio();
-
-    if (!context) return null;
-
-    if (context.state === "suspended") {
-      try {
-        await context.resume();
-      } catch (error) {
-        console.warn("Worship audio could not start:", error);
-      }
-    }
-
-    return context;
-  }
-
   function stopWorshipPad() {
-    if (!worshipContext) return;
 
-    const now = worshipContext.currentTime;
+    if (!audioContext) return;
 
-    activeWorshipNodes.forEach(node => {
+    const now = audioContext.currentTime;
+
+    activeVoices.forEach(voice => {
+
       try {
-        node.gain.gain.cancelScheduledValues(now);
-        node.gain.gain.setTargetAtTime(0.0001, now, 0.12);
-        node.oscillator.stop(now + 0.6);
+
+        voice.gain.gain.cancelScheduledValues(now);
+
+        voice.gain.gain.setTargetAtTime(
+          0,
+          now,
+          0.12
+        );
+
+        voice.oscillator.stop(now + 0.5);
+
       } catch (error) {
-        // Oscillator may already have stopped.
+        // Voice may already have stopped.
       }
     });
 
-    activeWorshipNodes = [];
+    activeVoices = [];
 
-    if (activeWorshipPad) {
-      activeWorshipPad.classList.remove("active");
-      activeWorshipPad = null;
-    }
+    worshipPads.forEach(pad => {
+      pad.classList.remove("playing");
+    });
+
+    activeWorshipPad = null;
   }
 
-  async function playWorshipNote(pad) {
-    if (!pad) return;
+  function startWorshipChord(pad) {
 
-    const frequency = Number(pad.dataset.freq);
+    const context = getAudio();
+    const output = getOutput();
 
-    if (!Number.isFinite(frequency) || frequency <= 0) {
-      console.warn("Invalid worship pad frequency:", pad.dataset.freq);
+    if (!context || !output) return;
+
+    const rootFrequency = Number(pad.dataset.freq);
+
+    if (!Number.isFinite(rootFrequency) || rootFrequency <= 0) {
       return;
     }
 
-    if (activeWorshipPad === pad) {
-      stopWorshipPad();
-      return;
-    }
+    const settings = toneSettings[currentTone];
 
-    const context = await resumeWorshipAudio();
-    if (!context) return;
+    const intervals = chordMode === "major"
+      ? [1, 1.259921, 1.498307]
+      : [1, 1.189207, 1.498307];
 
-    stopWorshipPad();
-
-    const settings = toneSettings[selectedTone];
-    const intervals = chordIntervals[selectedMode];
     const now = context.currentTime;
 
-    intervals.forEach(interval => {
+    intervals.forEach((interval, index) => {
+
       const oscillator = context.createOscillator();
       const gain = context.createGain();
+      const filter = context.createBiquadFilter();
 
-      oscillator.type = settings.type;
+      oscillator.type = settings.wave;
+
       oscillator.frequency.value =
-        frequency * Math.pow(2, interval / 12);
+        rootFrequency * interval;
 
-      oscillator.detune.value = settings.detune;
+      oscillator.detune.value =
+        settings.detune * (index - 1);
 
-      gain.gain.setValueAtTime(0.0001, now);
+      filter.type = "lowpass";
+      filter.frequency.value = settings.filter;
+
+      const voiceVolume =
+        settings.volume / (index === 0 ? 1 : 1.5);
+
+      gain.gain.setValueAtTime(0.001, now);
+
       gain.gain.linearRampToValueAtTime(
-        settings.volume,
+        voiceVolume,
         now + settings.attack
       );
 
-      oscillator.connect(gain);
-      gain.connect(worshipMaster);
+      oscillator.connect(filter);
+      filter.connect(gain);
+      gain.connect(output);
 
       oscillator.start(now);
 
-      activeWorshipNodes.push({
+      activeVoices.push({
         oscillator,
         gain
       });
     });
 
     activeWorshipPad = pad;
-    pad.classList.add("active");
+    pad.classList.add("playing");
   }
 
-  const worshipPads = $$(".wpad");
-
   worshipPads.forEach(pad => {
+
     pad.addEventListener("click", () => {
-      playWorshipNote(pad);
+
+      if (activeWorshipPad === pad) {
+        stopWorshipPad();
+        return;
+      }
+
+      stopWorshipPad();
+      startWorshipChord(pad);
     });
   });
 
-  // ==========================================
-  // 11. MAJOR / MINOR BUTTONS
-  // ==========================================
 
-  const majorBtn = $("#majorBtn");
-  const minorBtn = $("#minorBtn");
+  /* =========================================
+     11. MAJOR / MINOR BUTTONS
+  ========================================= */
 
-  function updateMode(mode) {
-    selectedMode = mode;
+  function setChordMode(mode) {
+
+    chordMode = mode;
 
     if (majorBtn) {
       const active = mode === "major";
+
       majorBtn.classList.toggle("active", active);
       majorBtn.setAttribute("aria-pressed", String(active));
     }
 
     if (minorBtn) {
       const active = mode === "minor";
+
       minorBtn.classList.toggle("active", active);
       minorBtn.setAttribute("aria-pressed", String(active));
     }
 
+    // Stop the current chord when the mode changes.
     stopWorshipPad();
   }
 
   if (majorBtn) {
     majorBtn.addEventListener("click", () => {
-      updateMode("major");
+      setChordMode("major");
     });
   }
 
   if (minorBtn) {
     minorBtn.addEventListener("click", () => {
-      updateMode("minor");
+      setChordMode("minor");
     });
   }
 
-  // ==========================================
-  // 12. WORSHIP SOUND PRESETS
-  // ==========================================
 
-  const toneButtons = $$("[data-tone]");
+  /* =========================================
+     12. WORSHIP SOUND PRESETS
+  ========================================= */
 
   toneButtons.forEach(button => {
+
     button.addEventListener("click", () => {
-      const tone = button.dataset.tone;
 
-      if (!toneSettings[tone]) return;
+      const selectedTone = button.dataset.tone;
 
-      selectedTone = tone;
+      if (!toneSettings[selectedTone]) return;
+
+      currentTone = selectedTone;
 
       toneButtons.forEach(item => {
         item.classList.toggle("active", item === button);
@@ -789,19 +968,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ==========================================
-  // 13. STOP WORSHIP SOUND WHEN TAB IS HIDDEN
-  // ==========================================
 
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      stopWorshipPad();
-    }
-  });
-
-  // ==========================================
-  // 14. BOOKING ASSISTANT
-  // ==========================================
+  /* =========================================
+     13. BOOKING ASSISTANT
+  ========================================= */
 
   const assistantButton = $("#pj-ai-btn");
   const assistantBox = $("#pj-ai-box");
@@ -810,72 +980,277 @@ document.addEventListener("DOMContentLoaded", () => {
   const assistantInput = $("#pj-ai-text");
   const assistantSend = $("#pj-ai-send");
 
-  let assistantStarted = false;
-  let bookingStep = 0;
-
-  const bookingDetails = {
+  const booking = {
     event: "",
     date: "",
-    location: ""
+    location: "",
+    details: ""
   };
 
-  function addAssistantMessage(message, sender = "bot") {
-    if (!assistantMessages) return;
+  let bookingStep = 0;
+  let assistantStarted = false;
 
-    const bubble = document.createElement("div");
-
-    bubble.className = sender === "user"
-      ? "pj-user-message"
-      : "pj-bot-message";
-
-    // Use textContent to prevent HTML injection.
-    bubble.textContent = message;
-
-    assistantMessages.appendChild(bubble);
-    assistantMessages.scrollTop = assistantMessages.scrollHeight;
-  }
+  const whatsappNumber = "233206834470";
 
   function openAssistant() {
+
     if (!assistantBox || !assistantButton) return;
 
     assistantBox.classList.add("open");
     assistantBox.setAttribute("aria-hidden", "false");
+
     assistantButton.setAttribute("aria-expanded", "true");
 
     if (!assistantStarted) {
       assistantStarted = true;
 
-      addAssistantMessage(
+      addBotMessage(
         "Hello! Welcome to Phil Jazzy's booking assistant. 🥁"
       );
 
-      addAssistantMessage(
-        "I can help you make a booking enquiry for church programs, weddings, studio recordings and live performances."
+      addBotMessage(
+        "I can help collect your event details so you can send a booking enquiry directly to Phil."
       );
 
-      addAssistantMessage(
-        "What type of event or musical service are you interested in?"
-      );
+      showQuickOptions([
+        "Church Program",
+        "Wedding / Event",
+        "Studio Recording",
+        "Concert / Live Show",
+        "Other"
+      ]);
     }
 
-    window.setTimeout(() => {
-      assistantInput?.focus();
-    }, 150);
+    setTimeout(() => {
+      if (assistantInput) assistantInput.focus();
+    }, 200);
   }
 
   function closeAssistant() {
+
     if (!assistantBox || !assistantButton) return;
 
     assistantBox.classList.remove("open");
     assistantBox.setAttribute("aria-hidden", "true");
+
     assistantButton.setAttribute("aria-expanded", "false");
+  }
+
+  function addMessage(message, type = "bot") {
+
+    if (!assistantMessages) return null;
+
+    const messageElement = document.createElement("div");
+
+    messageElement.className =
+      `pj-msg ${type === "user" ? "pj-user" : "pj-bot"}`;
+
+    // textContent prevents user input from being interpreted as HTML.
+    messageElement.textContent = message;
+
+    assistantMessages.appendChild(messageElement);
+
+    assistantMessages.scrollTop =
+      assistantMessages.scrollHeight;
+
+    return messageElement;
+  }
+
+  function addBotMessage(message) {
+    return addMessage(message, "bot");
+  }
+
+  function addUserMessage(message) {
+    return addMessage(message, "user");
+  }
+
+  function showQuickOptions(options) {
+
+    if (!assistantMessages) return;
+
+    const container = document.createElement("div");
+    container.className = "pj-quick";
+
+    options.forEach(option => {
+
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.textContent = option;
+
+      button.addEventListener("click", () => {
+        container.remove();
+        handleAssistantMessage(option);
+      });
+
+      container.appendChild(button);
+    });
+
+    assistantMessages.appendChild(container);
+
+    assistantMessages.scrollTop =
+      assistantMessages.scrollHeight;
+  }
+
+  function showWhatsAppLink() {
+
+    if (!assistantMessages) return;
+
+    const message = [
+      "Hello Phil Jazzy, I would like to make a booking enquiry.",
+      "",
+      `Event: ${booking.event}`,
+      `Date: ${booking.date}`,
+      `Location: ${booking.location}`,
+      `Additional details: ${booking.details || "Not provided"}`,
+      "",
+      "Please let me know your availability and booking details."
+    ].join("\n");
+
+    const url =
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    const link = document.createElement("a");
+
+    link.className = "pj-wa-link";
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "Continue to WhatsApp ↗";
+
+    assistantMessages.appendChild(link);
+
+    assistantMessages.scrollTop =
+      assistantMessages.scrollHeight;
+  }
+
+  function restartBooking() {
+
+    booking.event = "";
+    booking.date = "";
+    booking.location = "";
+    booking.details = "";
+
+    bookingStep = 0;
+
+    addBotMessage(
+      "No problem. Let's start again. What kind of event are you planning?"
+    );
+
+    showQuickOptions([
+      "Church Program",
+      "Wedding / Event",
+      "Studio Recording",
+      "Concert / Live Show",
+      "Other"
+    ]);
+  }
+
+  function handleAssistantMessage(rawMessage) {
+
+    const message = rawMessage.trim();
+
+    if (!message) return;
+
+    addUserMessage(message);
+
+    const normalized = message.toLowerCase();
+
+    if (
+      normalized === "restart" ||
+      normalized === "start again"
+    ) {
+      restartBooking();
+      return;
+    }
+
+    if (bookingStep === 0) {
+
+      booking.event = message;
+      bookingStep = 1;
+
+      addBotMessage(
+        "Great! What date is the event? You can enter the date or say that it is not yet confirmed."
+      );
+
+      return;
+    }
+
+    if (bookingStep === 1) {
+
+      booking.date = message;
+      bookingStep = 2;
+
+      addBotMessage(
+        "Where will the event take place? Please include the town or venue."
+      );
+
+      return;
+    }
+
+    if (bookingStep === 2) {
+
+      booking.location = message;
+      bookingStep = 3;
+
+      addBotMessage(
+        "Any additional details Phil should know? For example, the event time, type of performance or music requirements. You can also type 'None'."
+      );
+
+      return;
+    }
+
+    if (bookingStep === 3) {
+
+      booking.details =
+        normalized === "none" ? "None" : message;
+
+      bookingStep = 4;
+
+      addBotMessage(
+        "Thank you! Your booking enquiry is ready. Please continue to WhatsApp to send these details to Phil. He will personally confirm availability and discuss the booking."
+      );
+
+      showWhatsAppLink();
+
+      showQuickOptions([
+        "Start again"
+      ]);
+
+      return;
+    }
+
+    if (bookingStep === 4) {
+
+      if (normalized.includes("start")) {
+        restartBooking();
+      } else {
+        addBotMessage(
+          "Your enquiry is ready. Use the WhatsApp link above to send it to Phil, or type 'restart' to prepare another enquiry."
+        );
+      }
+
+      return;
+    }
+  }
+
+  function sendAssistantMessage() {
+
+    if (!assistantInput) return;
+
+    const message = assistantInput.value.trim();
+
+    if (!message) return;
+
+    assistantInput.value = "";
+
+    handleAssistantMessage(message);
   }
 
   if (assistantButton) {
     assistantButton.addEventListener("click", () => {
-      const isOpen = assistantBox?.classList.contains("open");
 
-      if (isOpen) {
+      if (assistantBox && assistantBox.classList.contains("open")) {
         closeAssistant();
       } else {
         openAssistant();
@@ -887,164 +1262,14 @@ document.addEventListener("DOMContentLoaded", () => {
     assistantClose.addEventListener("click", closeAssistant);
   }
 
-  function resetBooking() {
-    bookingStep = 0;
-
-    bookingDetails.event = "";
-    bookingDetails.date = "";
-    bookingDetails.location = "";
-
-    addAssistantMessage(
-      "Let's start again. What type of event would you like to book Phil Jazzy for?"
-    );
-  }
-
-  function createBookingLink() {
-    const message = [
-      "Hi Phil Jazzy! I would like to make a booking enquiry.",
-      "",
-      `Event: ${bookingDetails.event}`,
-      `Date: ${bookingDetails.date}`,
-      `Location: ${bookingDetails.location}`,
-      "",
-      "Please let me know your availability and quotation."
-    ].join("\n");
-
-    const link = document.createElement("a");
-
-    link.href =
-      "https://wa.me/233206834470?text=" +
-      encodeURIComponent(message);
-
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.textContent = "Continue on WhatsApp ↗";
-    link.className = "assistant-whatsapp-link";
-
-    assistantMessages.appendChild(link);
-    assistantMessages.scrollTop = assistantMessages.scrollHeight;
-  }
-
-  function processAssistantMessage(rawMessage) {
-    const message = rawMessage.trim();
-
-    if (!message) return;
-
-    addAssistantMessage(message, "user");
-
-    const lower = message.toLowerCase();
-
-    if (
-      ["restart", "start over", "start again"].includes(lower)
-    ) {
-      resetBooking();
-      return;
-    }
-
-    if (bookingStep === 0) {
-      if (
-        lower.includes("price") ||
-        lower.includes("cost") ||
-        lower.includes("how much") ||
-        lower.includes("rate")
-      ) {
-        addAssistantMessage(
-          "Booking rates depend on the type of event, location and requirements. Please share your event details so Phil can provide a quotation."
-        );
-
-        addAssistantMessage(
-          "What type of event are you planning?"
-        );
-
-        return;
-      }
-
-      if (
-        lower.includes("available") ||
-        lower.includes("availability") ||
-        lower.includes("free")
-      ) {
-        addAssistantMessage(
-          "I can collect your booking details, but I cannot check a live calendar. Phil will personally confirm availability."
-        );
-
-        addAssistantMessage(
-          "What type of event would you like to book?"
-        );
-
-        return;
-      }
-
-      bookingDetails.event = message;
-      bookingStep = 1;
-
-      addAssistantMessage(
-        "Great! What date are you planning for the event?"
-      );
-
-      return;
-    }
-
-    if (bookingStep === 1) {
-      bookingDetails.date = message;
-      bookingStep = 2;
-
-      addAssistantMessage(
-        "Thank you! Where will the event take place? Please provide the venue or town."
-      );
-
-      return;
-    }
-
-    if (bookingStep === 2) {
-      bookingDetails.location = message;
-      bookingStep = 3;
-
-      addAssistantMessage(
-        "Excellent! Here is a summary of your enquiry:"
-      );
-
-      addAssistantMessage(
-        `Event: ${bookingDetails.event}\nDate: ${bookingDetails.date}\nLocation: ${bookingDetails.location}`
-      );
-
-      addAssistantMessage(
-        "You can now send these details directly to Phil Jazzy on WhatsApp. He will confirm availability and provide a quotation."
-      );
-
-      createBookingLink();
-
-      addAssistantMessage(
-        "To make another enquiry, type RESTART."
-      );
-
-      return;
-    }
-
-    if (bookingStep === 3) {
-      addAssistantMessage(
-        "Your enquiry is ready. Use the WhatsApp link above to contact Phil. Type RESTART if you want to make another booking enquiry."
-      );
-    }
-  }
-
-  function sendAssistantMessage() {
-    if (!assistantInput) return;
-
-    const message = assistantInput.value.trim();
-
-    if (!message) return;
-
-    assistantInput.value = "";
-    processAssistantMessage(message);
-  }
-
   if (assistantSend) {
     assistantSend.addEventListener("click", sendAssistantMessage);
   }
 
   if (assistantInput) {
+
     assistantInput.addEventListener("keydown", event => {
+
       if (event.key === "Enter") {
         event.preventDefault();
         sendAssistantMessage();
@@ -1053,29 +1278,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.addEventListener("keydown", event => {
-    if (
-      event.key === "Escape" &&
-      assistantBox?.classList.contains("open")
-    ) {
+
+    if (event.key === "Escape" && assistantBox?.classList.contains("open")) {
       closeAssistant();
     }
   });
 
-  // ==========================================
-  // 15. FOOTER YEAR
-  // ==========================================
 
-  const year = $("#year");
+  /* =========================================
+     14. WHATSAPP BOOKING LINKS
+  ========================================= */
 
-  if (year) {
-    year.textContent = new Date().getFullYear();
-  }
+  const whatsappLinks = $$('a[href*="wa.me/"]');
 
-  // ==========================================
-  // 16. INITIAL STATUS
-  // ==========================================
+  whatsappLinks.forEach(link => {
 
-  console.log("Phil Jazzy website initialized successfully.");
-  console.log("Navigation, instruments and booking assistant loaded.");
+    link.addEventListener("click", () => {
+
+      // Analytics event, if Google Analytics is available.
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "whatsapp_booking_click", {
+          event_category: "booking",
+          event_label: link.textContent.trim()
+        });
+      }
+    });
+  });
+
+
+  /* =========================================
+     15. PAGE READY
+  ========================================= */
+
+  document.documentElement.classList.add("js-ready");
+
+  console.log("Phil Jazzy website JavaScript loaded successfully.");
 
 });
